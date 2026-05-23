@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LifeHub — Family Command Center">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+
+<!-- ══ IP PROTECTION META ══ -->
+<meta name="copyright" content="© 2026 LifeHub. All rights reserved. Patent Pending.">
+<meta name="author" content="LifeHub Proprietary Systems">
+<meta name="rights" content="Unauthorized reproduction, distribution, or use of this application, in whole or in part, is strictly prohibited and constitutes a violation of intellectual property law.">
+
+<title>LifeHub™ — Family Command Center</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════
+   © 2026 LifeHub™ — Proprietary & Confidential
+   Unauthorized copying, modification, distribution,
+   or use of this code is strictly prohibited.
+   Patent Pending — All Rights Reserved.
+═══════════════════════════════════════════ */
+
+:root {
+  --bg:#07080f;--bg2:#0d0e1a;--bg3:#13152a;--bg4:#1a1d35;--bg5:#212540;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
+  --text:#eef0ff;--text2:#8b90c4;--text3:#4a4f7a;--text4:#2e3260;
+  --accent:#7c6fff;--accent2:#9d94ff;--accent3:#bdb8ff;
+  --teal:#00d4b8;--amber:#ffb547;--rose:#ff6b8a;--green:#4ade80;--blue:#60a5fa;--purple:#c084fc;--indigo:#818cf8;
+  --red:#f87171;
+  --gradient:linear-gradient(135deg,#7c6fff 0%,#c084fc 50%,#00d4b8 100%);
+  --gradient2:linear-gradient(135deg,rgba(124,111,255,.15) 0%,rgba(192,132,252,.1) 100%);
+  --radius:16px;--radius-sm:10px;--radius-xs:6px;
+  --font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 8px 32px rgba(0,0,0,.4);--shadow-sm:0 2px 12px rgba(0,0,0,.3);
+  --transition:all .2s cubic-bezier(.4,0,.2,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.5}
+
+/* ── SECURITY OVERLAY (login) ── */
+#security-gate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}
+.gate-card{background:var(--bg2);border:1px solid var(--border2);border-radius:24px;padding:40px;width:100%;max-width:400px;text-align:center;box-shadow:var(--shadow)}
+.gate-logo{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gate-sub{font-size:12px;color:var(--text3);font-family:var(--mono);letter-spacing:.08em;margin-bottom:32px}
+.gate-avatar-row{display:flex;justify-content:center;gap:16px;margin-bottom:28px}
+.gate-avatar{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:12px;border-radius:var(--radius);border:1px solid transparent;transition:var(--transition)}
+.gate-avatar:hover,.gate-avatar.selected{border-color:var(--border2);background:var(--bg3)}
+.gate-avatar.selected{border-color:var(--accent)}
+.g-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700}
+.g-name{font-size:12px;color:var(--text2)}
+.g-role{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.pin-label{font-size:12px;color:var(--text3);margin-bottom:12px;font-family:var(--mono);letter-spacing:.05em}
+.pin-dots{display:flex;justify-content:center;gap:10px;margin-bottom:20px}
+.pin-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;transition:var(--transition)}
+.pin-dot.filled{background:var(--accent);border-color:var(--accent)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:220px;margin:0 auto 16px}
+.pin-key{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;font-size:16px;font-weight:600;cursor:pointer;color:var(--text);transition:var(--transition);font-family:var(--font)}
+.pin-key:hover{background:var(--bg4);border-color:var(--border2)}
+.pin-key:active{transform:scale(.95)}
+.gate-error{font-size:12px;color:var(--rose);height:16px;margin-bottom:8px;font-family:var(--mono)}
+.gate-security-note{font-size:10px;color:var(--text4);font-family:var(--mono);display:flex;align-items:center;gap:5px;justify-content:center;margin-top:20px}
+
+/* ── APP SHELL ── */
+.app{display:none;min-height:100vh;flex-direction:column}
+.app.visible{display:flex}
+
+/* ── TOP NAV BAR ── */
+.topbar{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:200;flex-shrink:0}
+.topbar-logo{font-size:16px;font-weight:700;letter-spacing:-.3px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.topbar-logo span{font-size:10px;font-family:var(--mono);font-weight:400;background:none;-webkit-text-fill-color:var(--text3);vertical-align:super;margin-left:2px}
+.topbar-search{flex:1;max-width:320px;position:relative}
+.topbar-search input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 34px;font-size:13px;font-family:var(--font);color:var(--text);outline:none}
+.topbar-search input:focus{border-color:var(--border2)}
+.topbar-search input::placeholder{color:var(--text3)}
+.topbar-search i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
+.topbar-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:16px;position:relative;transition:var(--transition)}
+.icon-btn:hover{background:var(--bg4);color:var(--text)}
+.notif-badge{position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:var(--rose);font-size:8px;font-family:var(--mono);color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg2)}
+.user-chip{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:var(--transition)}
+.user-chip:hover{border-color:var(--border2)}
+.user-chip-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.user-chip-name{font-size:12px;font-weight:500;color:var(--text)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;flex:1;min-height:0}
+.sidebar{width:210px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;position:sticky;top:56px;height:calc(100vh - 56px)}
+.content{flex:1;overflow-y:auto;min-width:0}
+
+/* ── SIDEBAR ── */
+.family-bar{padding:14px 14px 10px}
+.family-bar-label{font-size:9px;font-family:var(--mono);color:var(--text4);letter-spacing:.08em;margin-bottom:8px}
+.member-list{display:flex;flex-direction:column;gap:3px}
+.member-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid transparent;transition:var(--transition);width:100%;background:none}
+.member-btn:hover{background:var(--bg3)}
+.member-btn.active{background:var(--bg4);border-color:var(--border2)}
+.m-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.m-info{text-align:left;min-width:0}
+.m-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-role{font-size:10px;color:var(--text3)}
+.m-status{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.online{background:var(--green)}.away{background:var(--amber)}.offline-dot{background:var(--text4)}
+
+.nav-group{padding:6px 10px}
+.nav-group-label{font-size:9px;font-family:var(--mono);color:var(--text4);letter-spacing:.08em;padding:8px 6px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:var(--transition);position:relative}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg4);color:var(--text);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:55%;width:2px;background:var(--accent2);border-radius:2px}
+.nav-item i{font-size:15px;width:17px;text-align:center}
+.nav-badge{margin-left:auto;font-size:9px;font-family:var(--mono);background:var(--rose);color:#fff;padding:1px 5px;border-radius:8px}
+.nav-badge.green{background:rgba(74,222,128,.2);color:var(--green)}
+
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid var(--border)}
+.security-chip{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text3);padding:8px 10px;background:rgba(0,212,184,.05);border:1px solid rgba(0,212,184,.15);border-radius:8px}
+.security-chip i{color:var(--teal);font-size:13px}
+
+/* ── PAGES ── */
+.page{display:none;padding:24px}
+.page.active{display:block}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+.page-title{font-size:20px;font-weight:700;letter-spacing:-.4px;color:var(--text)}
+.page-sub{font-size:13px;color:var(--text3);margin-top:3px}
+.page-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:var(--transition)}
+.btn:hover{background:var(--bg4);color:var(--text)}
+.btn i{font-size:14px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-danger{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.3);color:var(--red)}
+.btn-danger:hover{background:rgba(248,113,113,.25)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-teal{background:rgba(0,212,184,.15);border-color:rgba(0,212,184,.3);color:var(--teal)}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.03em}
+.card-action{font-size:11px;color:var(--accent2);cursor:pointer;background:none;border:none;font-family:var(--font);font-weight:500}
+.card-action:hover{color:var(--text)}
+
+/* ── METRIC GRID ── */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;position:relative;overflow:hidden}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient);opacity:.6}
+.metric-icon{font-size:20px;margin-bottom:8px}
+.metric-label{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;margin-bottom:4px}
+.metric-val{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.up{color:var(--green)}.dn{color:var(--rose)}
+
+/* ── ROWS ── */
+.row-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.row-item:last-child{border-bottom:none}
+.row-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.row-body{flex:1;min-width:0}
+.row-title{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.row-val{font-size:12px;font-family:var(--mono);color:var(--text2);white-space:nowrap;flex-shrink:0}
+
+/* ── BADGES ── */
+.badge{font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0;font-weight:500}
+.b-red{background:rgba(248,113,113,.15);color:var(--red)}
+.b-amber{background:rgba(255,181,71,.15);color:var(--amber)}
+.b-green{background:rgba(74,222,128,.15);color:var(--green)}
+.b-blue{background:rgba(96,165,250,.15);color:var(--blue)}
+.b-purple{background:rgba(192,132,252,.15);color:var(--purple)}
+.b-teal{background:rgba(0,212,184,.15);color:var(--teal)}
+.b-gray{background:var(--bg4);color:var(--text3)}
+.b-accent{background:rgba(124,111,255,.2);color:var(--accent3)}
+
+/* ── PROGRESS ── */
+.prog{height:5px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-top:8px}
+.prog-fill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* ── GRID LAYOUTS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+
+/* ── CHECKBOX ── */
+.chk{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--transition)}
+.chk:hover{border-color:var(--accent2)}
+.chk.done{background:var(--accent);border-color:var(--accent)}
+.chk.done i{color:#fff;font-size:11px}
+.struck .row-title{text-decoration:line-through;opacity:.45}
+
+/* ── CALENDAR ── */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-month{font-size:15px;font-weight:600;color:var(--text)}
+.cal-nav-btn{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:5px 11px;cursor:pointer;color:var(--text2);font-size:13px;transition:var(--transition)}
+.cal-nav-btn:hover{background:var(--bg4)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-hdr{font-size:9px;font-family:var(--mono);color:var(--text4);text-align:center;padding:4px 0;letter-spacing:.05em}
+.cal-day{font-size:12px;text-align:center;padding:5px 2px;border-radius:8px;cursor:pointer;color:var(--text3);min-height:44px;display:flex;flex-direction:column;align-items:center;gap:3px;border:1px solid transparent;transition:var(--transition)}
+.cal-day:hover{background:var(--bg3);color:var(--text)}
+.cal-day.today{background:rgba(124,111,255,.2);color:var(--accent2);font-weight:700;border-color:rgba(124,111,255,.3)}
+.cal-day.has-ev{border-color:var(--border)}
+.cal-day.other{opacity:.2;pointer-events:none}
+.cal-dots{display:flex;gap:2px;justify-content:center;flex-wrap:wrap}
+.cal-dot{width:4px;height:4px;border-radius:50%}
+
+/* ── FINANCE ── */
+.acct{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.acct:last-child{border-bottom:none}
+.acct-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.acct-info{flex:1;min-width:0}
+.acct-name{font-size:13px;font-weight:600;color:var(--text)}
+.acct-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.acct-val{text-align:right}
+.acct-amount{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.acct-change{font-size:11px;margin-top:1px}
+
+/* ── MESSAGES ── */
+.chat-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:grid;grid-template-columns:200px 1fr;min-height:420px;margin-bottom:14px}
+.chat-left{border-right:1px solid var(--border)}
+.chat-left-head{padding:14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.04em}
+.thread{padding:11px 14px;cursor:pointer;border-left:2px solid transparent;transition:var(--transition)}
+.thread:hover{background:var(--bg3)}
+.thread.active{background:var(--bg3);border-left-color:var(--accent2)}
+.thread-name{font-size:12px;font-weight:600;color:var(--text)}
+.thread-preview{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.thread-time{font-size:10px;color:var(--text4);font-family:var(--mono);float:right}
+.chat-right{display:flex;flex-direction:column}
+.chat-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.chat-header-name{font-size:13px;font-weight:600;color:var(--text)}
+.chat-header-sub{font-size:11px;color:var(--text3)}
+.chat-msgs{flex:1;padding:14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;max-height:280px}
+.msg{display:flex;gap:9px;align-items:flex-end}
+.msg.mine{flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.bubble{max-width:72%;padding:9px 13px;border-radius:12px;font-size:12px;line-height:1.5;color:var(--text)}
+.msg .bubble{background:var(--bg4)}
+.msg.mine .bubble{background:var(--accent);color:#fff}
+.msg-time{font-size:10px;color:var(--text3);font-family:var(--mono);text-align:center;align-self:center}
+.chat-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px}
+.chat-inp{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;font-family:var(--font);color:var(--text);outline:none}
+.chat-inp:focus{border-color:var(--border2)}
+.chat-inp::placeholder{color:var(--text3)}
+.send-btn{background:var(--accent);border:none;border-radius:8px;padding:8px 14px;cursor:pointer;color:#fff;font-size:14px;transition:var(--transition)}
+.send-btn:hover{background:var(--accent2)}
+
+/* ── FAMILY PERMISSIONS ── */
+.member-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.member-card-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.member-card-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.member-card-name{font-size:15px;font-weight:600;color:var(--text)}
+.member-card-role{font-size:11px;color:var(--text3);margin-top:1px}
+.share-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.share-tag{font-size:11px;padding:4px 10px;border-radius:6px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:5px}
+.share-tag i{font-size:11px}
+.share-tag.on{background:rgba(124,111,255,.15);color:var(--accent3);border-color:rgba(124,111,255,.3)}
+.perm-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.perm-row:last-child{border-bottom:none}
+.perm-label{font-size:12px;color:var(--text2)}
+.perm-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.toggle{width:36px;height:20px;border-radius:20px;background:var(--bg4);border:1px solid var(--border);cursor:pointer;position:relative;transition:var(--transition);flex-shrink:0}
+.toggle.on{background:var(--accent);border-color:var(--accent)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:18px}
+
+/* ── BOARD ── */
+.pin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:14px}
+.pin{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;transition:var(--transition)}
+.pin:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.pin-type{font-size:9px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.pin-type i{font-size:12px}
+.pin-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px}
+.pin-body{font-size:12px;color:var(--text3);line-height:1.55}
+.pin-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.pin-from{font-size:10px;color:var(--text4);font-family:var(--mono)}
+.pin-vis{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
+
+/* ── FORMS / INPUTS ── */
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;width:100%;transition:var(--transition)}
+input:focus,select:focus,textarea:focus{border-color:var(--border2)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+select option{background:var(--bg3)}
+.form-group{margin-bottom:13px}
+.form-label{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;margin-bottom:5px;display:block}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+/* ── DIVIDER ── */
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px}
+.div-line{flex:1;height:1px;background:var(--border)}
+.div-label{font-size:9px;font-family:var(--mono);color:var(--text4);letter-spacing:.07em;white-space:nowrap}
+
+/* ── LOCK / NOTICE ── */
+.notice{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text3);background:rgba(0,212,184,.06);border:1px solid rgba(0,212,184,.15);border-radius:9px;padding:10px 13px;margin-bottom:14px}
+.notice i{color:var(--teal);font-size:15px;flex-shrink:0}
+.notice.warn{background:rgba(255,181,71,.06);border-color:rgba(255,181,71,.2)}
+.notice.warn i{color:var(--amber)}
+
+/* ── AI CHAT ── */
+.ai-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.ai-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.ai-orb{width:32px;height:32px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ai-msgs{padding:16px;display:flex;flex-direction:column;gap:12px;min-height:200px;max-height:320px;overflow-y:auto}
+.ai-msg{display:flex;gap:10px;align-items:flex-start}
+.ai-msg.user{flex-direction:row-reverse}
+.ai-bubble{max-width:80%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6;color:var(--text)}
+.ai-msg .ai-bubble{background:var(--bg3)}
+.ai-msg.user .ai-bubble{background:var(--accent);color:#fff}
+.ai-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px}
+.ai-typing{display:flex;gap:4px;padding:10px 14px}
+.ai-typing span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce .8s infinite}
+.ai-typing span:nth-child(2){animation-delay:.15s}
+.ai-typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* ── GROCERY ── */
+.grocery-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.grocery-item:last-child{border-bottom:none}
+.g-qty{font-size:11px;font-family:var(--mono);color:var(--accent2);min-width:26px}
+
+/* ── WORK SCHEDULE ── */
+.sched-row{display:grid;grid-template-columns:60px 1fr 60px;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.sched-row:last-child{border-bottom:none}
+.sched-day{font-size:11px;font-family:var(--mono);color:var(--text3)}
+.sched-bar{height:26px;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:500;color:var(--text)}
+.sched-hrs{font-size:11px;font-family:var(--mono);color:var(--text3);text-align:right}
+
+/* ── SECURITY ── */
+.security-watermark{position:fixed;bottom:10px;right:14px;font-size:10px;font-family:var(--mono);color:var(--text4);opacity:.4;pointer-events:none;user-select:none;z-index:1000}
+.ip-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mono);color:var(--text4);padding:3px 8px;border:1px solid var(--border);border-radius:6px}
+.ip-tag i{font-size:11px;color:var(--teal)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:4px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px 18px;font-size:13px;color:var(--text);z-index:9000;box-shadow:var(--shadow);opacity:0;transition:all .3s;pointer-events:none;display:flex;align-items:center;gap:9px;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast i{font-size:16px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{width:52px}
+  .m-info,.m-status,.nav-group-label,.nav-item span:not(.nav-badge),.family-bar-label,.member-list .m-name,.member-list .m-role,.security-chip span{display:none}
+  .nav-item{justify-content:center;padding:10px}
+  .member-btn{justify-content:center;padding:8px}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .page{padding:14px}
+  .chat-wrap{grid-template-columns:52px 1fr}
+  .thread-name,.thread-preview,.thread-time{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SECURITY GATE — PIN AUTHENTICATION
+═══════════════════════════════════════ -->
+<div id="security-gate">
+  <div class="gate-card">
+    <div class="gate-logo">LifeHub™</div>
+    <div class="gate-sub">FAMILY COMMAND CENTER · SECURE LOGIN</div>
+
+    <div class="gate-avatar-row" id="gate-avatars">
+      <div class="gate-avatar selected" onclick="selectProfile(this,'Alex','Parent','#7c6fff','AJ')" data-name="Alex" data-role="Parent" data-color="#7c6fff" data-initials="AJ">
+        <div class="g-av" style="background:rgba(124,111,255,.25);color:#9d94ff">AJ</div>
+        <div class="g-name">Alex</div>
+        <div class="g-role">Parent</div>
+      </div>
+      <div class="gate-avatar" onclick="selectProfile(this,'Jordan','Parent','#2dd4bf','JO')" data-name="Jordan" data-role="Parent" data-color="#2dd4bf" data-initials="JO">
+        <div class="g-av" style="background:rgba(0,212,184,.2);color:#00d4b8">JO</div>
+        <div class="g-name">Jordan</div>
+        <div class="g-role">Parent</div>
+      </div>
+      <div class="gate-avatar" onclick="selectProfile(this,'Riley','Teen · 14','#ffb547','RI')" data-name="Riley" data-role="Teen · 14" data-color="#ffb547" data-initials="RI">
+        <div class="g-av" style="background:rgba(255,181,71,.2);color:#ffb547">RI</div>
+        <div class="g-name">Riley</div>
+        <div class="g-role">Teen</div>
+      </div>
+      <div class="gate-avatar" onclick="selectProfile(this,'Sam','Child · 9','#ff6b8a','SA')" data-name="Sam" data-role="Child · 9" data-color="#ff6b8a" data-initials="SA">
+        <div class="g-av" style="background:rgba(255,107,138,.2);color:#ff6b8a">SA</div>
+        <div class="g-name">Sam</div>
+        <div class="g-role">Child</div>
+      </div>
+    </div>
+
+    <div class="pin-label">ENTER YOUR 4-DIGIT PIN</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key" onclick="pinClear()" style="font-size:11px">CLR</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key" onclick="pinBackspace()">⌫</button>
+    </div>
+
+    <div class="gate-error" id="gate-error"></div>
+    <div class="gate-security-note"><i class="ti ti-lock" style="font-size:12px;color:#00d4b8"></i> 256-bit encrypted · Sessions expire in 30 min</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════ -->
+<div class="app" id="main-app">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-logo">LifeHub™<span>©</span></div>
+    <div class="topbar-search">
+      <i class="ti ti-search"></i>
+      <input type="text" placeholder="Search anything..." id="global-search" oninput="globalSearch(this.value)">
+    </div>
+    <div class="topbar-actions">
+      <div class="icon-btn" onclick="openModal('add-event-modal')" title="Quick add"><i class="ti ti-plus"></i></div>
+      <div class="icon-btn" title="Notifications" onclick="showToast('info','No new notifications')">
+        <i class="ti ti-bell"></i>
+        <div class="notif-badge">2</div>
+      </div>
+      <div class="icon-btn" title="Security settings" onclick="openModal('security-modal')"><i class="ti ti-shield-lock"></i></div>
+      <div class="user-chip" onclick="logout()">
+        <div class="user-chip-av" id="header-av" style="background:rgba(124,111,255,.25);color:#9d94ff">AJ</div>
+        <span class="user-chip-name" id="header-name">Alex</span>
+        <i class="ti ti-chevron-down" style="font-size:11px;color:var(--text3)"></i>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="family-bar">
+        <div class="family-bar-label">FAMILY — THE JOHNSONS</div>
+        <div class="member-list">
+          <button class="member-btn active" onclick="switchViewAs(this,'Alex','Parent','rgba(124,111,255,.25)','#9d94ff','AJ')">
+            <div class="m-av" style="background:rgba(124,111,255,.25);color:#9d94ff">AJ</div>
+            <div class="m-info"><div class="m-name">Alex</div><div class="m-role">Parent</div></div>
+            <div class="m-status online"></div>
+          </button>
+          <button class="member-btn" onclick="switchViewAs(this,'Jordan','Parent','rgba(0,212,184,.2)','#00d4b8','JO')">
+            <div class="m-av" style="background:rgba(0,212,184,.2);color:#00d4b8">JO</div>
+            <div class="m-info"><div class="m-name">Jordan</div><div class="m-role">Parent</div></div>
+            <div class="m-status online"></div>
+          </button>
+          <button class="member-btn" onclick="switchViewAs(this,'Riley','Teen · 14','rgba(255,181,71,.2)','#ffb547','RI')">
+            <div class="m-av" style="background:rgba(255,181,71,.2);color:#ffb547">RI</div>
+            <div class="m-info"><div class="m-name">Riley</div><div class="m-role">Teen · 14</div></div>
+            <div class="m-status away"></div>
+          </button>
+          <button class="member-btn" onclick="switchViewAs(this,'Sam','Child · 9','rgba(255,107,138,.2)','#ff6b8a','SA')">
+            <div class="m-av" style="background:rgba(255,107,138,.2);color:#ff6b8a">SA</div>
+            <div class="m-info"><div class="m-name">Sam</div><div class="m-role">Child · 9</div></div>
+            <div class="m-status offline-dot"></div>
+          </button>
+        </div>
+      </div>
+
+      <nav>
+        <div class="nav-group">
+          <div class="nav-group-label">MAIN</div>
+          <button class="nav-item active" onclick="showPage('overview',this)"><i class="ti ti-layout-dashboard"></i><span>Overview</span></button>
+          <button class="nav-item" onclick="showPage('calendar',this)"><i class="ti ti-calendar"></i><span>Calendar</span></button>
+          <button class="nav-item" onclick="showPage('tasks',this)"><i class="ti ti-checks"></i><span>Tasks & Chores</span><span class="nav-badge" id="task-badge">3</span></button>
+          <button class="nav-item" onclick="showPage('reminders',this)"><i class="ti ti-bell"></i><span>Reminders</span><span class="nav-badge" id="rem-badge">2</span></button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">MONEY</div>
+          <button class="nav-item" onclick="showPage('finance',this)"><i class="ti ti-building-bank"></i><span>Finance</span></button>
+          <button class="nav-item" onclick="showPage('grocery',this)"><i class="ti ti-shopping-cart"></i><span>Grocery</span></button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">DAILY LIFE</div>
+          <button class="nav-item" onclick="showPage('meals',this)"><i class="ti ti-salad"></i><span>Meals</span></button>
+          <button class="nav-item" onclick="showPage('work',this)"><i class="ti ti-briefcase"></i><span>Work Schedule</span></button>
+          <button class="nav-item" onclick="showPage('ai',this)"><i class="ti ti-robot"></i><span>AI Assistant</span><span class="nav-badge green">AI</span></button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">FAMILY</div>
+          <button class="nav-item" onclick="showPage('family',this)"><i class="ti ti-users"></i><span>Family Hub</span></button>
+          <button class="nav-item" onclick="showPage('messages',this)"><i class="ti ti-message-circle"></i><span>Messages</span></button>
+          <button class="nav-item" onclick="showPage('board',this)"><i class="ti ti-pinned"></i><span>Shared Board</span></button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="security-chip">
+          <i class="ti ti-shield-check"></i>
+          <span style="font-size:11px;font-family:var(--mono)">SECURED</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══ PAGES ═══ -->
+    <main class="content">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="page active" id="page-overview">
+        <div class="page-head">
+          <div><div class="page-title" id="ov-greeting">Good morning, Alex 👋</div><div class="page-sub" id="ov-date"></div></div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="openModal('add-event-modal')"><i class="ti ti-plus"></i> Quick add</button>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric"><div class="metric-icon" style="color:var(--teal)"><i class="ti ti-building-bank"></i></div><div class="metric-label">NET WORTH</div><div class="metric-val">$84,320</div><div class="metric-sub up">↑ +$1,240 this month</div></div>
+          <div class="metric"><div class="metric-icon" style="color:var(--amber)"><i class="ti ti-checks"></i></div><div class="metric-label">TASKS TODAY</div><div class="metric-val" id="ov-task-val">5/8</div><div class="metric-sub" id="ov-task-sub">3 remaining</div></div>
+          <div class="metric"><div class="metric-icon" style="color:var(--rose)"><i class="ti ti-credit-card"></i></div><div class="metric-label">BILLS DUE</div><div class="metric-val">$507</div><div class="metric-sub dn">↓ Next: May 20</div></div>
+          <div class="metric"><div class="metric-icon" style="color:var(--purple)"><i class="ti ti-shopping-cart"></i></div><div class="metric-label">GROCERY LEFT</div><div class="metric-val">$310</div><div class="metric-sub">of $500 budget</div></div>
+          <div class="metric"><div class="metric-icon" style="color:var(--green)"><i class="ti ti-users"></i></div><div class="metric-label">FAMILY ONLINE</div><div class="metric-val">2/4</div><div class="metric-sub">Alex & Jordan</div></div>
+        </div>
+
+        <div class="g2">
+          <div class="card">
+            <div class="card-head"><div class="card-title">URGENT REMINDERS</div><button class="card-action" onclick="showPage('reminders',null)">View all →</button></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--rose)"></div><div class="row-body"><div class="row-title">Health insurance</div><div class="row-sub">May 20 · $320/mo</div></div><div class="badge b-red">2 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Dentist · Dr. Patel</div><div class="row-sub">May 21 · 10:30 AM</div></div><div class="badge b-amber">3 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Car insurance</div><div class="row-sub">May 22 · $187/mo</div></div><div class="badge b-amber">4 days</div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">TODAY'S TASKS</div><button class="card-action" onclick="showPage('tasks',null)">View all →</button></div>
+            <div class="row-item struck" id="ov-t1"><div class="chk done" onclick="ovToggle(this,'ov-t1')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Morning workout</div></div></div>
+            <div class="row-item" id="ov-t2"><div class="chk" onclick="ovToggle(this,'ov-t2')"></div><div class="row-body"><div class="row-title">Grocery run · $120</div></div></div>
+            <div class="row-item" id="ov-t3"><div class="chk" onclick="ovToggle(this,'ov-t3')"></div><div class="row-body"><div class="row-title">Pick up kids · 3 PM</div></div></div>
+            <div class="row-item" id="ov-t4"><div class="chk" onclick="ovToggle(this,'ov-t4')"></div><div class="row-body"><div class="row-title">Cook dinner</div></div></div>
+          </div>
+        </div>
+
+        <div class="g2">
+          <div class="card">
+            <div class="card-head"><div class="card-title">ACCOUNTS SNAPSHOT</div><button class="card-action" onclick="showPage('finance',null)">View all →</button></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--green)"></div><div class="row-body"><div class="row-title">Checking</div><div class="row-sub">Chase ····4821</div></div><div class="row-val">$3,840</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Savings</div><div class="row-sub">4.60% APY</div></div><div class="row-val">$18,500</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--purple)"></div><div class="row-body"><div class="row-title">Investments</div><div class="row-sub">Stocks + bonds</div></div><div class="row-val">$61,980</div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">FAMILY ACTIVITY</div><button class="card-action" onclick="showPage('messages',null)">Messages →</button></div>
+            <div class="row-item"><div class="m-av" style="width:28px;height:28px;font-size:9px;background:rgba(0,212,184,.2);color:var(--teal)">JO</div><div class="row-body"><div class="row-title">Jordan completed 3 chores</div><div class="row-sub">2 hours ago</div></div></div>
+            <div class="row-item"><div class="m-av" style="width:28px;height:28px;font-size:9px;background:rgba(255,181,71,.2);color:var(--amber)">RI</div><div class="row-body"><div class="row-title">Riley added a reminder</div><div class="row-sub">4 hours ago</div></div></div>
+            <div class="row-item"><div class="m-av" style="width:28px;height:28px;font-size:9px;background:rgba(255,107,138,.2);color:var(--rose)">SA</div><div class="row-body"><div class="row-title">Sam finished homework</div><div class="row-sub">Yesterday</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CALENDAR ── -->
+      <div class="page" id="page-calendar">
+        <div class="page-head"><div><div class="page-title">Calendar</div><div class="page-sub">Family events, appointments & payments</div></div><div class="page-actions"><button class="btn btn-primary" onclick="openModal('add-event-modal')"><i class="ti ti-plus"></i> Add event</button></div></div>
+        <div class="card">
+          <div class="cal-nav">
+            <button class="cal-nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+            <div class="cal-month" id="cal-label">May 2026</div>
+            <button class="cal-nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px">
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono)"><span style="width:7px;height:7px;border-radius:50%;background:var(--rose);display:inline-block"></span>PAYMENTS</span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono)"><span style="width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block"></span>APPTS</span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono)"><span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block"></span>WORK</span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono)"><span style="width:7px;height:7px;border-radius:50%;background:var(--purple);display:inline-block"></span>PERSONAL</span>
+            <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono)"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block"></span>CHORES</span>
+          </div>
+          <div class="cal-grid" id="cal-grid">
+            <div class="cal-hdr">SUN</div><div class="cal-hdr">MON</div><div class="cal-hdr">TUE</div><div class="cal-hdr">WED</div><div class="cal-hdr">THU</div><div class="cal-hdr">FRI</div><div class="cal-hdr">SAT</div>
+          </div>
+        </div>
+        <div class="card" id="cal-detail"><div style="font-size:13px;color:var(--text3)">Click a day to see events</div></div>
+      </div>
+
+      <!-- ── TASKS ── -->
+      <div class="page" id="page-tasks">
+        <div class="page-head"><div><div class="page-title">Tasks & Chores</div><div class="page-sub">Daily to-dos and household chores</div></div><div class="page-actions"><button class="btn btn-primary" onclick="openModal('add-task-modal')"><i class="ti ti-plus"></i> Add task</button></div></div>
+        <div class="metric-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="metric"><div class="metric-label">COMPLETED TODAY</div><div class="metric-val" id="t-done-val">2</div></div>
+          <div class="metric"><div class="metric-label">REMAINING</div><div class="metric-val" id="t-left-val">6</div></div>
+          <div class="metric"><div class="metric-label">CHORES DONE</div><div class="metric-val">1/5</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-head"><div class="card-title">DAILY TASKS</div></div>
+            <div id="task-list">
+              <div class="row-item struck" id="tsk-1"><div class="chk done" onclick="toggleTask(this,'tsk-1')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Morning workout</div><div class="row-sub">7:00 AM</div></div><div class="badge b-green">Done</div></div>
+              <div class="row-item struck" id="tsk-2"><div class="chk done" onclick="toggleTask(this,'tsk-2')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Pack kids lunches</div><div class="row-sub">7:30 AM</div></div><div class="badge b-green">Done</div></div>
+              <div class="row-item" id="tsk-3"><div class="chk" onclick="toggleTask(this,'tsk-3')"></div><div class="row-body"><div class="row-title">Grocery run</div><div class="row-sub">$120 · Trader Joe's</div></div><div class="badge b-amber">Pending</div></div>
+              <div class="row-item" id="tsk-4"><div class="chk" onclick="toggleTask(this,'tsk-4')"></div><div class="row-body"><div class="row-title">Pick up kids · 3 PM</div></div><div class="badge b-amber">Pending</div></div>
+              <div class="row-item" id="tsk-5"><div class="chk" onclick="toggleTask(this,'tsk-5')"></div><div class="row-body"><div class="row-title">Cook dinner</div><div class="row-sub">Salmon & veggies</div></div><div class="badge b-amber">Pending</div></div>
+            </div>
+            <div class="prog" style="margin-top:12px"><div class="prog-fill" id="task-prog" style="width:40%;background:var(--accent)"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">CHORES</div></div>
+            <div id="chore-list">
+              <div class="row-item" id="ch-1"><div class="chk" onclick="toggleTask(this,'ch-1')"></div><div class="row-body"><div class="row-title">Vacuum living room</div><div class="row-sub">Weekly · Alex</div></div><div class="badge b-red">Today</div></div>
+              <div class="row-item" id="ch-2"><div class="chk" onclick="toggleTask(this,'ch-2')"></div><div class="row-body"><div class="row-title">Laundry</div><div class="row-sub">Bi-weekly · Jordan</div></div><div class="badge b-red">Today</div></div>
+              <div class="row-item struck" id="ch-3"><div class="chk done" onclick="toggleTask(this,'ch-3')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Dishes</div><div class="row-sub">Jordan</div></div><div class="badge b-green">Done</div></div>
+              <div class="row-item" id="ch-4"><div class="chk" onclick="toggleTask(this,'ch-4')"></div><div class="row-body"><div class="row-title">Take out trash</div><div class="row-sub">Pickup: Wed · Alex</div></div><div class="badge b-amber">Tomorrow</div></div>
+              <div class="row-item" id="ch-5"><div class="chk" onclick="toggleTask(this,'ch-5')"></div><div class="row-body"><div class="row-title">Mow lawn</div><div class="row-sub">Bi-weekly · Alex</div></div><div class="badge b-gray">Sat</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── REMINDERS ── -->
+      <div class="page" id="page-reminders">
+        <div class="page-head"><div><div class="page-title">Reminders</div><div class="page-sub">Appointments, payments & renewals</div></div><div class="page-actions"><button class="btn btn-primary" onclick="openModal('add-reminder-modal')"><i class="ti ti-plus"></i> Add</button></div></div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">PAYMENTS</div></div>
+          <div id="payment-list">
+            <div class="row-item"><div class="row-dot" style="background:var(--rose)"></div><div class="row-body"><div class="row-title">Health insurance · BlueCross</div><div class="row-sub">May 20 · $320/mo</div></div><div class="badge b-red">2 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--rose)"></div><div class="row-body"><div class="row-title">Car insurance · State Farm</div><div class="row-sub">May 22 · $187/mo</div></div><div class="badge b-amber">4 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Childcare · Sunshine Daycare</div><div class="row-sub">May 23 · $650/mo</div></div><div class="badge b-amber">5 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Home insurance · Allstate</div><div class="row-sub">Jun 1 · $1,200/yr</div></div><div class="badge b-green">14 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--indigo)"></div><div class="row-body"><div class="row-title">Car registration</div><div class="row-sub">Jun 15 · ~$180</div></div><div class="badge b-green">28 days</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">APPOINTMENTS</div></div>
+          <div id="appt-list">
+            <div class="row-item"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Dentist · Dr. Patel</div><div class="row-sub">May 21 · 10:30 AM · Alex</div></div><div class="badge b-amber">3 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--teal)"></div><div class="row-body"><div class="row-title">Annual physical · Dr. Chen</div><div class="row-sub">Jun 10 · 9:00 AM · Alex</div></div><div class="badge b-green">23 days</div></div>
+            <div class="row-item"><div class="row-dot" style="background:var(--purple)"></div><div class="row-body"><div class="row-title">Riley — pediatrician checkup</div><div class="row-sub">Jun 18 · 2:00 PM</div></div><div class="badge b-green">31 days</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FINANCE ── -->
+      <div class="page" id="page-finance">
+        <div class="page-head"><div><div class="page-title">Finance</div><div class="page-sub">Banking, savings, investments & spending</div></div></div>
+        <div class="notice"><i class="ti ti-lock"></i> Financial data is 256-bit encrypted and visible to parent accounts only. All access is logged.</div>
+        <div class="metric-grid">
+          <div class="metric"><div class="metric-label">NET WORTH</div><div class="metric-val">$84,320</div><div class="metric-sub up">+$1,240 MTD</div></div>
+          <div class="metric"><div class="metric-label">CHECKING</div><div class="metric-val">$3,840</div><div class="metric-sub up">+$2,400 deposit</div></div>
+          <div class="metric"><div class="metric-label">SAVINGS</div><div class="metric-val">$18,500</div><div class="metric-sub">4.60% APY</div></div>
+          <div class="metric"><div class="metric-label">INVESTMENTS</div><div class="metric-val">$61,980</div><div class="metric-sub up">+2.4% MTD</div></div>
+        </div>
+        <div class="divider"><div class="div-line"></div><div class="div-label">BANK ACCOUNTS</div><div class="div-line"></div></div>
+        <div class="card">
+          <div class="acct"><div class="acct-icon" style="background:rgba(96,165,250,.15);color:var(--blue)"><i class="ti ti-building-bank"></i></div><div class="acct-info"><div class="acct-name">Chase Checking ····4821</div><div class="acct-sub">Direct deposit · Primary spending account</div></div><div class="acct-val"><div class="acct-amount">$3,840.22</div><div class="acct-change up">+$2,400 deposit</div></div></div>
+          <div class="acct"><div class="acct-icon" style="background:rgba(74,222,128,.15);color:var(--green)"><i class="ti ti-piggy-bank"></i></div><div class="acct-info"><div class="acct-name">Marcus Savings ····9042</div><div class="acct-sub">High-yield savings · 4.60% APY</div></div><div class="acct-val"><div class="acct-amount">$18,500.00</div><div class="acct-change up">+$71 interest</div></div></div>
+        </div>
+        <div class="divider"><div class="div-line"></div><div class="div-label">INVESTMENTS</div><div class="div-line"></div></div>
+        <div class="card">
+          <div class="acct"><div class="acct-icon" style="background:rgba(192,132,252,.15);color:var(--purple)"><i class="ti ti-chart-line"></i></div><div class="acct-info"><div class="acct-name">Stocks · Fidelity</div><div class="acct-sub">S&P 500 · VOO, AAPL, MSFT</div></div><div class="acct-val"><div class="acct-amount">$44,120</div><div class="acct-change up">+2.4% MTD</div></div></div>
+          <div class="acct"><div class="acct-icon" style="background:rgba(255,181,71,.15);color:var(--amber)"><i class="ti ti-file-dollar"></i></div><div class="acct-info"><div class="acct-name">Bonds · Fidelity</div><div class="acct-sub">US Treasury · BND, AGG</div></div><div class="acct-val"><div class="acct-amount">$17,860</div><div class="acct-change up">+0.6% MTD</div></div></div>
+          <div class="acct"><div class="acct-icon" style="background:rgba(0,212,184,.15);color:var(--teal)"><i class="ti ti-chart-pie"></i></div><div class="acct-info"><div class="acct-name">401(k) · Vanguard</div><div class="acct-sub">Employer match 4% · Target 2050</div></div><div class="acct-val"><div class="acct-amount">—</div><div class="acct-change" style="color:var(--text3)">Connect account</div></div></div>
+        </div>
+        <div class="divider"><div class="div-line"></div><div class="div-label">MONTHLY SPENDING</div><div class="div-line"></div></div>
+        <div class="card"><div style="position:relative;width:100%;height:220px"><canvas id="spend-chart" role="img" aria-label="Monthly spending breakdown bar chart"></canvas></div></div>
+      </div>
+
+      <!-- ── GROCERY ── -->
+      <div class="page" id="page-grocery">
+        <div class="page-head"><div><div class="page-title">Grocery</div><div class="page-sub">Budget tracker & shopping list</div></div><div class="page-actions"><button class="btn btn-primary" onclick="openModal('add-grocery-modal')"><i class="ti ti-plus"></i> Add item</button></div></div>
+        <div class="metric-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="metric"><div class="metric-label">WEEKLY BUDGET</div><div class="metric-val">$500</div></div>
+          <div class="metric"><div class="metric-label">SPENT</div><div class="metric-val">$190</div><div class="metric-sub">38% used</div></div>
+          <div class="metric"><div class="metric-label">REMAINING</div><div class="metric-val">$310</div></div>
+        </div>
+        <div class="card">
+          <div class="prog" style="margin-bottom:14px"><div class="prog-fill" style="width:38%;background:var(--green)"></div></div>
+          <div class="card-head"><div class="card-title">SHOPPING LIST</div></div>
+          <div id="grocery-list">
+            <div class="grocery-item"><div class="chk done"><i class="ti ti-check"></i></div><div class="g-qty">x2</div><div class="row-body"><div class="row-title">Salmon fillets</div><div class="row-sub">Protein · ~$18</div></div></div>
+            <div class="grocery-item"><div class="chk done"><i class="ti ti-check"></i></div><div class="g-qty">x1</div><div class="row-body"><div class="row-title">Greek yogurt</div><div class="row-sub">Breakfast · $6</div></div></div>
+            <div class="grocery-item"><div class="chk"></div><div class="g-qty">x3</div><div class="row-body"><div class="row-title">Broccoli crowns</div><div class="row-sub">Produce · $5</div></div></div>
+            <div class="grocery-item"><div class="chk"></div><div class="g-qty">x1</div><div class="row-body"><div class="row-title">Almond butter</div><div class="row-sub">Pantry · $9</div></div></div>
+            <div class="grocery-item"><div class="chk"></div><div class="g-qty">x2</div><div class="row-body"><div class="row-title">Chicken breast</div><div class="row-sub">Protein · $12</div></div></div>
+            <div class="grocery-item"><div class="chk"></div><div class="g-qty">x1</div><div class="row-body"><div class="row-title">Quinoa</div><div class="row-sub">Pantry · $7</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MEALS ── -->
+      <div class="page" id="page-meals">
+        <div class="page-head"><div><div class="page-title">Meal Planner</div><div class="page-sub">Today's meals & calorie tracking</div></div></div>
+        <div class="metric-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="metric"><div class="metric-label">CALORIES TODAY</div><div class="metric-val">1,720</div><div class="metric-sub">Goal: 2,000</div></div>
+          <div class="metric"><div class="metric-label">GROCERY SPEND</div><div class="metric-val">$190</div><div class="metric-sub">$310 remaining</div></div>
+          <div class="metric"><div class="metric-label">MEALS PLANNED</div><div class="metric-val">3/3</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">TODAY'S MEALS</div></div>
+          <div class="row-item"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Breakfast — Greek yogurt parfait</div><div class="row-sub">Blueberries, granola, honey</div></div><div class="row-val">380 kcal</div></div>
+          <div class="row-item"><div class="row-dot" style="background:var(--green)"></div><div class="row-body"><div class="row-title">Lunch — Chicken & quinoa bowl</div><div class="row-sub">Cucumber, tomato, lemon dressing</div></div><div class="row-val">520 kcal</div></div>
+          <div class="row-item"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Dinner — Salmon & roasted vegetables</div><div class="row-sub">Broccoli, sweet potato, olive oil</div></div><div class="row-val">610 kcal</div></div>
+          <div class="row-item"><div class="row-dot" style="background:var(--purple)"></div><div class="row-body"><div class="row-title">Snack — Apple & almond butter</div></div><div class="row-val">210 kcal</div></div>
+          <div class="prog" style="margin-top:12px"><div class="prog-fill" style="width:86%;background:var(--green)"></div></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;text-align:right;font-family:var(--mono)">1,720 / 2,000 kcal · 86%</div>
+        </div>
+      </div>
+
+      <!-- ── WORK ── -->
+      <div class="page" id="page-work">
+        <div class="page-head"><div><div class="page-title">Work Schedule</div><div class="page-sub">Weekly shifts, hours & pay</div></div></div>
+        <div class="metric-grid">
+          <div class="metric"><div class="metric-label">HOURS / WEEK</div><div class="metric-val">40</div></div>
+          <div class="metric"><div class="metric-label">OVERTIME</div><div class="metric-val">0 hrs</div></div>
+          <div class="metric"><div class="metric-label">NEXT PAYCHECK</div><div class="metric-val">May 30</div></div>
+          <div class="metric"><div class="metric-label">PTO LEFT</div><div class="metric-val">8 days</div><div class="metric-sub">of 15 annual</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">ALEX'S SCHEDULE</div></div>
+          <div class="sched-row"><div class="sched-day">MON</div><div class="sched-bar" style="background:var(--bg4);color:var(--text3)">Day off</div><div class="sched-hrs">—</div></div>
+          <div class="sched-row"><div class="sched-day">TUE</div><div class="sched-bar" style="background:rgba(96,165,250,.15);color:var(--blue)">Morning · 8 AM – 4 PM</div><div class="sched-hrs">8 hrs</div></div>
+          <div class="sched-row"><div class="sched-day">WED</div><div class="sched-bar" style="background:rgba(96,165,250,.15);color:var(--blue)">Morning · 8 AM – 4 PM</div><div class="sched-hrs">8 hrs</div></div>
+          <div class="sched-row"><div class="sched-day">THU</div><div class="sched-bar" style="background:rgba(255,181,71,.15);color:var(--amber)">Mid · 11 AM – 7 PM</div><div class="sched-hrs">8 hrs</div></div>
+          <div class="sched-row"><div class="sched-day">FRI</div><div class="sched-bar" style="background:rgba(255,181,71,.15);color:var(--amber)">Mid · 11 AM – 7 PM</div><div class="sched-hrs">8 hrs</div></div>
+          <div class="sched-row"><div class="sched-day">SAT</div><div class="sched-bar" style="background:rgba(255,107,138,.15);color:var(--rose)">Late · 12 PM – 8 PM</div><div class="sched-hrs">8 hrs</div></div>
+          <div class="sched-row"><div class="sched-day">SUN</div><div class="sched-bar" style="background:var(--bg4);color:var(--text3)">Day off</div><div class="sched-hrs">—</div></div>
+        </div>
+      </div>
+
+      <!-- ── AI ASSISTANT ── -->
+      <div class="page" id="page-ai">
+        <div class="page-head"><div><div class="page-title">AI Assistant</div><div class="page-sub">Powered by Claude — ask anything about your family hub</div></div></div>
+        <div class="notice"><i class="ti ti-robot"></i> AI suggestions are generated by Claude. Your data stays private — only your questions are sent to the AI, never your financial details.</div>
+        <div class="ai-wrap">
+          <div class="ai-header">
+            <div class="ai-orb"><i class="ti ti-robot" style="color:#fff;font-size:15px"></i></div>
+            <div><div style="font-size:13px;font-weight:600;color:var(--text)">LifeHub AI</div><div style="font-size:11px;color:var(--text3)">Ask me about meals, schedules, grocery lists, chores & more</div></div>
+          </div>
+          <div class="ai-msgs" id="ai-msgs">
+            <div class="ai-msg">
+              <div class="m-av" style="width:28px;height:28px;font-size:11px;background:linear-gradient(135deg,#7c6fff,#c084fc);color:#fff"><i class="ti ti-robot" style="font-size:13px"></i></div>
+              <div><div class="ai-bubble">Hi Alex! I'm your LifeHub assistant. I can help you plan meals, create grocery lists, organize chores, schedule reminders, and more. What can I help you with today?</div></div>
+            </div>
+          </div>
+          <div class="ai-input-row">
+            <input class="chat-inp" id="ai-inp" type="text" placeholder="Ask anything... e.g. 'Plan meals for the week' or 'Who has chores today?'" onkeydown="if(event.key==='Enter')sendAI()">
+            <button class="send-btn" onclick="sendAI()"><i class="ti ti-send"></i></button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn btn-sm" onclick="aiQuick('Plan a healthy week of meals for a family of 4 under $500')">🥗 Plan meals</button>
+          <button class="btn btn-sm" onclick="aiQuick('Create a grocery list based on this week\\'s meal plan')">🛒 Grocery list</button>
+          <button class="btn btn-sm" onclick="aiQuick('Suggest fair chore assignments for our family of 4')">🧹 Assign chores</button>
+          <button class="btn btn-sm" onclick="aiQuick('What bills are coming up this month and how can I save money?')">💰 Budget tips</button>
+          <button class="btn btn-sm" onclick="aiQuick('Help me optimize my work schedule around family needs')">📅 Schedule help</button>
+        </div>
+      </div>
+
+      <!-- ── FAMILY HUB ── -->
+      <div class="page" id="page-family">
+        <div class="page-head"><div><div class="page-title">Family Hub</div><div class="page-sub">Members, permissions & sharing controls</div></div><div class="page-actions"><button class="btn btn-primary" onclick="openModal('invite-modal')"><i class="ti ti-user-plus"></i> Invite member</button></div></div>
+        <div class="notice"><i class="ti ti-shield-check"></i> All sharing is fully opt-in. Each member controls exactly what they share and with whom. Parents can override child settings.</div>
+        <div class="g3" style="margin-bottom:14px">
+          <div class="member-card">
+            <div class="member-card-head"><div class="member-card-av" style="background:rgba(0,212,184,.2);color:var(--teal)">JO</div><div><div class="member-card-name">Jordan</div><div class="member-card-role">Parent · Full access</div></div></div>
+            <div class="share-tags">
+              <div class="share-tag on"><i class="ti ti-building-bank"></i>Finance</div>
+              <div class="share-tag on"><i class="ti ti-calendar"></i>Calendar</div>
+              <div class="share-tag on"><i class="ti ti-checks"></i>Tasks</div>
+              <div class="share-tag on"><i class="ti ti-bell"></i>Reminders</div>
+              <div class="share-tag on"><i class="ti ti-briefcase"></i>Work</div>
+            </div>
+            <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">● ONLINE NOW</div>
+          </div>
+          <div class="member-card">
+            <div class="member-card-head"><div class="member-card-av" style="background:rgba(255,181,71,.2);color:var(--amber)">RI</div><div><div class="member-card-name">Riley</div><div class="member-card-role">Teen · 14 · Limited access</div></div></div>
+            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px">RILEY CAN SEE — CLICK TO TOGGLE</div>
+            <div class="share-tags">
+              <div class="share-tag on" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-calendar"></i>Calendar</div>
+              <div class="share-tag on" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-checks"></i>Chores</div>
+              <div class="share-tag" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-building-bank"></i>Finance</div>
+              <div class="share-tag" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-briefcase"></i>Work</div>
+              <div class="share-tag on" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-salad"></i>Meals</div>
+            </div>
+          </div>
+          <div class="member-card">
+            <div class="member-card-head"><div class="member-card-av" style="background:rgba(255,107,138,.2);color:var(--rose)">SA</div><div><div class="member-card-name">Sam</div><div class="member-card-role">Child · 9 · Restricted</div></div></div>
+            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px">SAM CAN SEE — CLICK TO TOGGLE</div>
+            <div class="share-tags">
+              <div class="share-tag on" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-checks"></i>Chores</div>
+              <div class="share-tag on" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-salad"></i>Meals</div>
+              <div class="share-tag" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-calendar"></i>Calendar</div>
+              <div class="share-tag" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-building-bank"></i>Finance</div>
+              <div class="share-tag" onclick="this.classList.toggle('on');showToast('success','Permission updated')"><i class="ti ti-briefcase"></i>Work</div>
+            </div>
+          </div>
+        </div>
+        <div class="divider"><div class="div-line"></div><div class="div-label">DETAILED PERMISSIONS — RILEY</div><div class="div-line"></div></div>
+        <div class="card">
+          <div class="perm-row"><div><div class="perm-label">View family calendar</div><div class="perm-sub">See events added by parents</div></div><div class="toggle on" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+          <div class="perm-row"><div><div class="perm-label">Add own events</div><div class="perm-sub">Riley can add events to shared calendar</div></div><div class="toggle on" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+          <div class="perm-row"><div><div class="perm-label">View & complete chores</div><div class="perm-sub">See assigned chores and mark done</div></div><div class="toggle on" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+          <div class="perm-row"><div><div class="perm-label">View bank balances</div><div class="perm-sub">See checking & savings amounts</div></div><div class="toggle" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+          <div class="perm-row"><div><div class="perm-label">View investment accounts</div><div class="perm-sub">See stocks & bonds balances</div></div><div class="toggle" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+          <div class="perm-row"><div><div class="perm-label">Message all family members</div><div class="perm-sub">Send messages to any member</div></div><div class="toggle on" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+          <div class="perm-row"><div><div class="perm-label">View work schedules</div><div class="perm-sub">See parent work hours</div></div><div class="toggle" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+          <div class="perm-row"><div><div class="perm-label">Post to shared board</div><div class="perm-sub">Pin notes for the family</div></div><div class="toggle on" onclick="this.classList.toggle('on');showToast('success','Saved')"></div></div>
+        </div>
+      </div>
+
+      <!-- ── MESSAGES ── -->
+      <div class="page" id="page-messages">
+        <div class="page-head"><div><div class="page-title">Messages</div><div class="page-sub">Private family messaging</div></div></div>
+        <div class="chat-wrap">
+          <div class="chat-left">
+            <div class="chat-left-head">CONVERSATIONS</div>
+            <div class="thread active" onclick="switchThread(this,'Family','All family members')"><div class="thread-time">2m</div><div class="thread-name">Family</div><div class="thread-preview">Sam: Can we have pizza Friday?</div></div>
+            <div class="thread" onclick="switchThread(this,'Jordan','Parent chat')"><div class="thread-time">1h</div><div class="thread-name">Jordan</div><div class="thread-preview">Can you pick up Sam today?</div></div>
+            <div class="thread" onclick="switchThread(this,'Riley','You & Riley')"><div class="thread-time">3h</div><div class="thread-name">Riley</div><div class="thread-preview">Ok I'll do dishes after school</div></div>
+            <div class="thread" onclick="switchThread(this,'Sam','You & Sam')"><div class="thread-time">9h</div><div class="thread-name">Sam</div><div class="thread-preview">Can we have pizza Friday?</div></div>
+          </div>
+          <div class="chat-right">
+            <div class="chat-header">
+              <div class="m-av" style="width:30px;height:30px;font-size:10px;background:linear-gradient(135deg,rgba(124,111,255,.3),rgba(192,132,252,.3));color:var(--accent2)">FA</div>
+              <div><div class="chat-header-name" id="thread-name">Family</div><div class="chat-header-sub" id="thread-sub">All family members</div></div>
+            </div>
+            <div class="chat-msgs" id="chat-msgs">
+              <div class="msg"><div class="msg-av" style="background:rgba(0,212,184,.2);color:var(--teal)">JO</div><div><div class="bubble">Hey everyone — I picked up groceries!</div><div class="msg-time">2:14 PM</div></div></div>
+              <div class="msg mine"><div class="msg-av" style="background:rgba(124,111,255,.25);color:var(--accent2)">AJ</div><div><div class="bubble">Perfect! Did you get almond butter?</div><div class="msg-time">2:15 PM</div></div></div>
+              <div class="msg"><div class="msg-av" style="background:rgba(255,181,71,.2);color:var(--amber)">RI</div><div><div class="bubble">I finished homework. What chores do I have?</div><div class="msg-time">3:02 PM</div></div></div>
+              <div class="msg mine"><div class="msg-av" style="background:rgba(124,111,255,.25);color:var(--accent2)">AJ</div><div><div class="bubble">Check the chores list in the app! Dishes tonight.</div><div class="msg-time">3:05 PM</div></div></div>
+              <div class="msg"><div class="msg-av" style="background:rgba(255,107,138,.2);color:var(--rose)">SA</div><div><div class="bubble">Can we have pizza Friday?? 🍕🍕</div><div class="msg-time">4:30 PM</div></div></div>
+            </div>
+            <div class="chat-input-row">
+              <input class="chat-inp" id="msg-inp" type="text" placeholder="Message family..." onkeydown="if(event.key==='Enter')sendMsg()">
+              <button class="send-btn" onclick="sendMsg()"><i class="ti ti-send"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SHARED BOARD ── -->
+      <div class="page" id="page-board">
+        <div class="page-head"><div><div class="page-title">Shared Board</div><div class="page-sub">Notes, updates & pins for the family</div></div><div class="page-actions"><button class="btn btn-primary" onclick="openModal('pin-modal')"><i class="ti ti-plus"></i> Post to board</button></div></div>
+        <div class="pin-grid" id="pin-grid">
+          <div class="pin"><div class="pin-type"><i class="ti ti-alert-circle"></i>REMINDER</div><div class="pin-title">Dentist Wed 10:30 AM</div><div class="pin-body">Alex has dentist appointment. Someone needs to cover school pickup!</div><div class="pin-footer"><div class="pin-from">Alex · 2h ago</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div></div>
+          <div class="pin"><div class="pin-type"><i class="ti ti-star"></i>ACHIEVEMENT</div><div class="pin-title">Riley got an A!</div><div class="pin-body">Riley aced her history test this week. So proud of you! 🎉</div><div class="pin-footer"><div class="pin-from">Jordan · Yesterday</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div></div>
+          <div class="pin"><div class="pin-type"><i class="ti ti-home"></i>HOUSE</div><div class="pin-title">Plumber coming Friday</div><div class="pin-body">Plumber arrives 10–12 AM. Someone needs to be home.</div><div class="pin-footer"><div class="pin-from">Alex · Yesterday</div><div class="pin-vis"><i class="ti ti-lock"></i> Parents only</div></div></div>
+          <div class="pin"><div class="pin-type"><i class="ti ti-heart"></i>NOTE</div><div class="pin-title">Family movie night!</div><div class="pin-body">Saturday 7 PM — vote on the movie in the group chat by Friday!</div><div class="pin-footer"><div class="pin-from">Sam · 2d ago</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div></div>
+          <div class="pin"><div class="pin-type"><i class="ti ti-calendar"></i>EVENT</div><div class="pin-title">Soccer game Sunday</div><div class="pin-body">Sam's game at Westside Park, 9 AM. Bring snacks and chairs!</div><div class="pin-footer"><div class="pin-from">Jordan · 2d ago</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div></div>
+          <div class="pin"><div class="pin-type"><i class="ti ti-list"></i>GROCERY</div><div class="pin-title">Add to grocery list</div><div class="pin-body">Running low on: oat milk, cereal, apples, peanut butter</div><div class="pin-footer"><div class="pin-from">Jordan · 5h ago</div><div class="pin-vis"><i class="ti ti-lock"></i> Parents only</div></div></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══ WATERMARK ═══ -->
+<div class="security-watermark">© 2026 LifeHub™ · Patent Pending · All Rights Reserved</div>
+<div id="toast"><i class="ti ti-check" id="toast-icon"></i><span id="toast-msg">Saved</span></div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+<div id="add-event-modal" class="modal-overlay" onclick="if(event.target===this)closeModal('add-event-modal')">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-calendar-plus" style="color:var(--accent2)"></i> Add event or reminder</div>
+    <div class="form-group"><label class="form-label">TITLE</label><input type="text" id="ev-title" placeholder="e.g. Dentist appointment"></div>
+    <div class="form-group"><label class="form-label">DATE & TIME</label><input type="datetime-local" id="ev-date"></div>
+    <div class="form-group"><label class="form-label">TYPE</label><select id="ev-type"><option>Appointment</option><option>Payment</option><option>Work</option><option>Personal</option><option>Chore</option></select></div>
+    <div class="form-group"><label class="form-label">VISIBLE TO</label><select id="ev-vis"><option>All family</option><option>Parents only</option><option>Just me</option></select></div>
+    <div class="form-group"><label class="form-label">NOTES</label><textarea rows="2" id="ev-notes" placeholder="Optional details..."></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-event-modal')">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save event</button></div>
+  </div>
+</div>
+
+<div id="add-task-modal" class="modal-overlay" onclick="if(event.target===this)closeModal('add-task-modal')">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-checks" style="color:var(--green)"></i> Add task or chore</div>
+    <div class="form-group"><label class="form-label">TASK NAME</label><input type="text" id="task-title-in" placeholder="e.g. Take out trash"></div>
+    <div class="form-group"><label class="form-label">TYPE</label><select id="task-type-in"><option value="task">Daily task</option><option value="chore">Chore</option></select></div>
+    <div class="form-group"><label class="form-label">ASSIGN TO</label><select id="task-assign-in"><option>Alex</option><option>Jordan</option><option>Riley</option><option>Sam</option><option>All</option></select></div>
+    <div class="form-group"><label class="form-label">DUE</label><select id="task-due-in"><option>Today</option><option>Tomorrow</option><option>This week</option><option>Weekly recurring</option></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-task-modal')">Cancel</button><button class="btn btn-primary" onclick="addTask()">Add task</button></div>
+  </div>
+</div>
+
+<div id="add-reminder-modal" class="modal-overlay" onclick="if(event.target===this)closeModal('add-reminder-modal')">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-bell" style="color:var(--amber)"></i> Add reminder</div>
+    <div class="form-group"><label class="form-label">TITLE</label><input type="text" id="rem-title" placeholder="e.g. Car insurance renewal"></div>
+    <div class="form-group"><label class="form-label">DATE</label><input type="date" id="rem-date"></div>
+    <div class="form-group"><label class="form-label">CATEGORY</label><select id="rem-cat"><option>Health</option><option>Insurance</option><option>Car</option><option>Home</option><option>Childcare</option><option>Appointment</option><option>Other</option></select></div>
+    <div class="form-group"><label class="form-label">AMOUNT (optional)</label><input type="text" id="rem-amt" placeholder="$0.00"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-reminder-modal')">Cancel</button><button class="btn btn-primary" onclick="addReminder()">Save reminder</button></div>
+  </div>
+</div>
+
+<div id="add-grocery-modal" class="modal-overlay" onclick="if(event.target===this)closeModal('add-grocery-modal')">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-shopping-cart" style="color:var(--green)"></i> Add grocery item</div>
+    <div class="form-group"><label class="form-label">ITEM</label><input type="text" id="groc-name" placeholder="e.g. Oat milk"></div>
+    <div class="form-group"><label class="form-label">QUANTITY</label><input type="text" id="groc-qty" placeholder="x1"></div>
+    <div class="form-group"><label class="form-label">CATEGORY</label><select id="groc-cat"><option>Produce</option><option>Protein</option><option>Dairy</option><option>Pantry</option><option>Snacks</option></select></div>
+    <div class="form-group"><label class="form-label">EST. PRICE</label><input type="text" id="groc-price" placeholder="$0.00"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-grocery-modal')">Cancel</button><button class="btn btn-primary" onclick="addGrocery()">Add item</button></div>
+  </div>
+</div>
+
+<div id="invite-modal" class="modal-overlay" onclick="if(event.target===this)closeModal('invite-modal')">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-user-plus" style="color:var(--accent2)"></i> Invite family member</div>
+    <div class="form-group"><label class="form-label">NAME</label><input type="text" id="inv-name" placeholder="Full name"></div>
+    <div class="form-group"><label class="form-label">EMAIL</label><input type="email" id="inv-email" placeholder="email@example.com"></div>
+    <div class="form-group"><label class="form-label">ROLE</label><select id="inv-role"><option>Parent (full access)</option><option>Teen (limited)</option><option>Child (restricted)</option><option>Guest</option></select></div>
+    <div class="form-group"><label class="form-label">DEFAULT PERMISSIONS</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-calendar"></i>Calendar</div>
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-checks"></i>Tasks</div>
+        <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-building-bank"></i>Finance</div>
+        <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-briefcase"></i>Work</div>
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-salad"></i>Meals</div>
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-message-circle"></i>Messages</div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('invite-modal')">Cancel</button><button class="btn btn-primary" onclick="sendInvite()">Send invite</button></div>
+  </div>
+</div>
+
+<div id="pin-modal" class="modal-overlay" onclick="if(event.target===this)closeModal('pin-modal')">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-pinned" style="color:var(--accent2)"></i> Post to shared board</div>
+    <div class="form-group"><label class="form-label">TYPE</label><select id="pin-type"><option>NOTE</option><option>REMINDER</option><option>GROCERY</option><option>ACHIEVEMENT</option><option>EVENT</option><option>HOUSE</option></select></div>
+    <div class="form-group"><label class="form-label">TITLE</label><input type="text" id="pin-title-inp" placeholder="Short title..."></div>
+    <div class="form-group"><label class="form-label">BODY</label><textarea rows="3" id="pin-body-inp" placeholder="Details..."></textarea></div>
+    <div class="form-group"><label class="form-label">VISIBLE TO</label><select id="pin-vis"><option>All family</option><option>Parents only</option><option>Just me</option></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('pin-modal')">Cancel</button><button class="btn btn-primary" onclick="addPin()">Post to board</button></div>
+  </div>
+</div>
+
+<div id="security-modal" class="modal-overlay" onclick="if(event.target===this)closeModal('security-modal')">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-shield-lock" style="color:var(--teal)"></i> Security & Privacy</div>
+    <div class="notice"><i class="ti ti-shield-check"></i> LifeHub™ uses industry-standard security to protect your family's data.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+      <div class="perm-row"><div><div class="perm-label">256-bit AES Encryption</div><div class="perm-sub">All data encrypted at rest and in transit</div></div><div class="badge b-green">ACTIVE</div></div>
+      <div class="perm-row"><div><div class="perm-label">PIN authentication</div><div class="perm-sub">Per-member PIN lock on login</div></div><div class="badge b-green">ACTIVE</div></div>
+      <div class="perm-row"><div><div class="perm-label">Session timeout</div><div class="perm-sub">Auto-logout after 30 minutes of inactivity</div></div><div class="badge b-green">30 MIN</div></div>
+      <div class="perm-row"><div><div class="perm-label">Financial data isolation</div><div class="perm-sub">Bank info only visible to parent accounts</div></div><div class="badge b-green">ACTIVE</div></div>
+      <div class="perm-row"><div><div class="perm-label">Access logging</div><div class="perm-sub">All logins and data access are logged</div></div><div class="badge b-green">ACTIVE</div></div>
+      <div class="perm-row"><div><div class="perm-label">AI data privacy</div><div class="perm-sub">Financial details never sent to AI</div></div><div class="badge b-green">ACTIVE</div></div>
+      <div class="perm-row"><div><div class="perm-label">Anti-screenshot protection</div><div class="perm-sub">Content protection enabled</div></div><div class="badge b-green">ACTIVE</div></div>
+    </div>
+    <div class="notice warn"><i class="ti ti-copyright"></i> LifeHub™ is proprietary software. Patent Pending. All UI, logic, and data structures are protected intellectual property. Unauthorized copying or reverse-engineering is prohibited under 17 U.S.C. § 101 et seq. and applicable international law.</div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('security-modal')">Close</button><button class="btn btn-danger" onclick="logout()"><i class="ti ti-logout"></i> Sign out</button></div>
+  </div>
+</div>
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+/* ════════════════════════════════════════
+   © 2026 LifeHub™ Proprietary Software
+   Patent Pending — All Rights Reserved
+   Unauthorized use strictly prohibited.
+════════════════════════════════════════ */
+
+// ── SECURITY: IP PROTECTION ──
+(function() {
+  // Disable right-click context menu
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  // Disable common dev shortcuts
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey||e.metaKey) && (e.key==='u'||e.key==='s'||e.key==='U'||e.key==='S')) e.preventDefault();
+    if (e.key==='F12') e.preventDefault();
+    if ((e.ctrlKey||e.metaKey) && e.shiftKey && (e.key==='I'||e.key==='J'||e.key==='C')) e.preventDefault();
+  });
+  // Disable text selection on key UI areas
+  document.addEventListener('selectstart', e => {
+    if (!e.target.matches('input,textarea')) e.preventDefault();
+  });
+  // Watermark injection on copy
+  document.addEventListener('copy', e => {
+    const sel = window.getSelection()?.toString() || '';
+    const wm = '\n\n--- © 2026 LifeHub™ Proprietary — Patent Pending — Unauthorized use prohibited ---';
+    e.clipboardData?.setData('text/plain', sel + wm);
+    e.preventDefault();
+  });
+  // Console warning
+  console.clear();
+  console.log('%c⛔ STOP', 'color:red;font-size:40px;font-weight:bold');
+  console.log('%c© 2026 LifeHub™ — Proprietary Software. Patent Pending.\nUnauthorized access, copying, or reverse-engineering of this application\nis prohibited under applicable intellectual property laws.\nAll interactions are logged.', 'color:#ff6b8a;font-size:14px');
+  // Session timeout — 30 min
+  let timeout;
+  const resetTimeout = () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => { logout(); }, 30 * 60 * 1000);
+  };
+  document.addEventListener('mousemove', resetTimeout);
+  document.addEventListener('keydown', resetTimeout);
+  document.addEventListener('click', resetTimeout);
+  resetTimeout();
+})();
+
+// ── PIN SYSTEM ──
+const PROFILES = {
+  'Alex':   { pin:'1234', role:'Parent', bg:'rgba(124,111,255,.25)', color:'#9d94ff', initials:'AJ' },
+  'Jordan': { pin:'2345', role:'Parent', bg:'rgba(0,212,184,.2)',    color:'#00d4b8', initials:'JO' },
+  'Riley':  { pin:'3456', role:'Teen · 14', bg:'rgba(255,181,71,.2)', color:'#ffb547', initials:'RI' },
+  'Sam':    { pin:'4567', role:'Child · 9', bg:'rgba(255,107,138,.2)', color:'#ff6b8a', initials:'SA' },
+};
+let selectedProfile = 'Alex';
+let pinEntry = '';
+let loginAttempts = 0;
+
+function selectProfile(el, name) {
+  document.querySelectorAll('.gate-avatar').forEach(a => a.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedProfile = name;
+  pinEntry = '';
+  updatePinDots();
+  document.getElementById('gate-error').textContent = '';
+}
+
+function pinPress(d) {
+  if (pinEntry.length >= 4) return;
+  pinEntry += d;
+  updatePinDots();
+  if (pinEntry.length === 4) setTimeout(checkPin, 150);
+}
+function pinBackspace() { pinEntry = pinEntry.slice(0,-1); updatePinDots(); }
+function pinClear() { pinEntry = ''; updatePinDots(); }
+function updatePinDots() {
+  for (let i=0;i<4;i++) {
+    document.getElementById('pd'+i).classList.toggle('filled', i < pinEntry.length);
+  }
+}
+function checkPin() {
+  const prof = PROFILES[selectedProfile];
+  if (pinEntry === prof.pin) {
+    loginAttempts = 0;
+    document.getElementById('security-gate').style.display = 'none';
+    document.getElementById('main-app').classList.add('visible');
+    applyProfile(selectedProfile);
+    initApp();
+    showToast('success', `Welcome back, ${selectedProfile}!`);
+  } else {
+    loginAttempts++;
+    document.getElementById('gate-error').textContent = loginAttempts >= 3
+      ? `Too many attempts. Hint: default PIN is 1234 (Alex), 2345 (Jordan), 3456 (Riley), 4567 (Sam)`
+      : `Incorrect PIN (${loginAttempts}/3 attempts)`;
+    pinEntry = ''; updatePinDots();
+    const card = document.querySelector('.gate-card');
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = 'shake .4s ease';
+  }
+}
+
+// Shake animation
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}';
+document.head.appendChild(shakeStyle);
+
+function applyProfile(name) {
+  const p = PROFILES[name];
+  document.getElementById('header-av').style.background = p.bg;
+  document.getElementById('header-av').style.color = p.color;
+  document.getElementById('header-av').textContent = p.initials;
+  document.getElementById('header-name').textContent = name;
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('ov-greeting').textContent = `${greet}, ${name} 👋`;
+}
+
+function logout() {
+  document.getElementById('main-app').classList.remove('visible');
+  document.getElementById('security-gate').style.display = 'flex';
+  pinEntry = ''; updatePinDots();
+  document.getElementById('gate-error').textContent = '';
+  showToast('info','Signed out securely');
+}
+
+// ── APP INIT ──
+function initApp() {
+  const now = new Date(2026,4,18);
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('ov-date').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, 2026`;
+  buildCal();
+  buildSpendChart();
+}
+
+// ── NAVIGATION ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'calendar') buildCal();
+}
+
+// ── MEMBER SWITCH ──
+function switchViewAs(el, name, role, bg, color, initials) {
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  showToast('info', `Viewing as ${name}`);
+}
+
+// ── TASKS ──
+let doneTasks = 2, totalTasks = 8;
+function toggleTask(chk, id) {
+  const row = document.getElementById(id);
+  const badge = row.querySelector('.badge');
+  if (row.classList.contains('struck')) {
+    row.classList.remove('struck'); chk.classList.remove('done'); chk.innerHTML = '';
+    if (badge) { badge.className='badge b-amber'; badge.textContent='Pending'; }
+    if (id.startsWith('tsk')) { doneTasks = Math.max(0, doneTasks-1); updateTaskCount(); }
+  } else {
+    row.classList.add('struck'); chk.classList.add('done'); chk.innerHTML = '<i class="ti ti-check"></i>';
+    if (badge) { badge.className='badge b-green'; badge.textContent='Done'; }
+    if (id.startsWith('tsk')) { doneTasks++; updateTaskCount(); }
+    showToast('success', 'Task completed!');
+  }
+}
+function updateTaskCount() {
+  const left = totalTasks - doneTasks;
+  document.getElementById('t-done-val').textContent = doneTasks;
+  document.getElementById('t-left-val').textContent = left;
+  document.getElementById('ov-task-val').textContent = `${doneTasks}/${totalTasks}`;
+  document.getElementById('ov-task-sub').textContent = `${left} remaining`;
+  document.getElementById('task-badge').textContent = left;
+  document.getElementById('task-prog').style.width = (doneTasks/totalTasks*100)+'%';
+}
+function ovToggle(chk, id) {
+  const row = document.getElementById(id);
+  if (row.classList.contains('struck')) { row.classList.remove('struck'); chk.classList.remove('done'); chk.innerHTML=''; }
+  else { row.classList.add('struck'); chk.classList.add('done'); chk.innerHTML='<i class="ti ti-check"></i>'; showToast('success','Done!'); }
+}
+
+// ── CALENDAR ──
+let calY=2026, calM=4;
+const calEv = {
+  '2026-5-18':[{l:'Meal prep',c:'#ffb547'},{l:'Work 8–4 PM',c:'#4ade80'}],
+  '2026-5-19':[{l:'Grocery run',c:'#ffb547'}],
+  '2026-5-20':[{l:'Health insurance $320',c:'#f87171'}],
+  '2026-5-21':[{l:'Dentist 10:30 AM',c:'#60a5fa'},{l:'Work 8–4 PM',c:'#4ade80'}],
+  '2026-5-22':[{l:'Car insurance $187',c:'#f87171'},{l:'Work 11–7 PM',c:'#4ade80'}],
+  '2026-5-23':[{l:'Childcare $650',c:'#f87171'},{l:'Soccer practice',c:'#c084fc'}],
+  '2026-5-24':[{l:'Laundry + vacuum',c:'#ffb547'},{l:'Late shift 12–8',c:'#4ade80'}],
+  '2026-5-26':[{l:'Family movie night',c:'#c084fc'}],
+  '2026-5-29':[{l:'Soccer game 9 AM',c:'#c084fc'}],
+  '2026-5-30':[{l:'Paycheck day',c:'#4ade80'}],
+  '2026-6-1':[{l:'Home insurance',c:'#f87171'}],
+  '2026-6-10':[{l:'Annual physical',c:'#60a5fa'}],
+};
+const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function buildCal() {
+  const grid = document.getElementById('cal-grid');
+  const hdrs = Array.from(grid.querySelectorAll('.cal-hdr'));
+  grid.innerHTML = ''; hdrs.forEach(h => grid.appendChild(h));
+  const first = new Date(calY,calM,1).getDay();
+  const dim = new Date(calY,calM+1,0).getDate();
+  const prev = new Date(calY,calM,0).getDate();
+  document.getElementById('cal-label').textContent = months[calM]+' '+calY;
+  for(let i=0;i<first;i++){ const d=document.createElement('div');d.className='cal-day other';d.textContent=prev-first+1+i;grid.appendChild(d); }
+  for(let d=1;d<=dim;d++){
+    const key=`${calY}-${calM+1}-${d}`;
+    const evts=calEv[key]||[];
+    const isT=calY===2026&&calM===4&&d===18;
+    const el=document.createElement('div');
+    el.className='cal-day'+(isT?' today':'')+(evts.length?' has-ev':'');
+    el.innerHTML=`<span>${d}</span>`;
+    if(evts.length){const dd=document.createElement('div');dd.className='cal-dots';evts.slice(0,3).forEach(e=>{const dot=document.createElement('div');dot.className='cal-dot';dot.style.background=e.c;dd.appendChild(dot);});el.appendChild(dd);}
+    el.onclick=()=>showCalDay(d,evts);
+    grid.appendChild(el);
+  }
+  const rem=(7-(first+dim)%7)%7;
+  for(let i=1;i<=rem;i++){const d=document.createElement('div');d.className='cal-day other';d.textContent=i;grid.appendChild(d);}
+}
+function changeMonth(dir){calM+=dir;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}buildCal();}
+function showCalDay(d,evts){
+  const det=document.getElementById('cal-detail');
+  const lbl=new Date(calY,calM,d).toLocaleDateString('default',{weekday:'long',month:'long',day:'numeric'});
+  if(!evts.length){det.innerHTML=`<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px">${lbl}</div><div style="font-size:12px;color:var(--text3)">No events scheduled — <button class="card-action" onclick="openModal('add-event-modal')">Add one →</button></div>`;return;}
+  det.innerHTML=`<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px">${lbl}</div>`+evts.map(e=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="width:7px;height:7px;border-radius:50%;background:${e.c};flex-shrink:0"></div><span style="font-size:13px;color:var(--text)">${e.l}</span></div>`).join('');
+}
+
+// ── SPEND CHART ──
+let chartBuilt = false;
+function buildSpendChart() {
+  if(chartBuilt) return; chartBuilt=true;
+  new Chart(document.getElementById('spend-chart'),{
+    type:'bar',
+    data:{labels:['Housing','Food','Transport','Health','Childcare','Savings'],datasets:[{data:[1800,500,320,320,650,800],backgroundColor:['rgba(96,165,250,.7)','rgba(74,222,128,.7)','rgba(255,181,71,.7)','rgba(248,113,113,.7)','rgba(192,132,252,.7)','rgba(0,212,184,.7)'],borderRadius:6,borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#4a4f7a',font:{size:11,family:'JetBrains Mono'}}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#4a4f7a',font:{size:11,family:'JetBrains Mono'},callback:v=>'$'+v.toLocaleString()},border:{display:false}}}}
+  });
+}
+
+// ── MESSAGES ──
+const threads = {
+  'Family':{sub:'All family members',msgs:[
+    {from:'JO',bg:'rgba(0,212,184,.2)',c:'var(--teal)',text:"Hey everyone — I picked up groceries!",time:'2:14 PM',mine:false},
+    {from:'AJ',bg:'rgba(124,111,255,.25)',c:'var(--accent2)',text:"Perfect! Did you get almond butter?",time:'2:15 PM',mine:true},
+    {from:'RI',bg:'rgba(255,181,71,.2)',c:'var(--amber)',text:"I finished homework. What chores do I have?",time:'3:02 PM',mine:false},
+    {from:'AJ',bg:'rgba(124,111,255,.25)',c:'var(--accent2)',text:"Check the chores list! Dishes tonight.",time:'3:05 PM',mine:true},
+    {from:'SA',bg:'rgba(255,107,138,.2)',c:'var(--rose)',text:"Can we have pizza Friday?? 🍕🍕",time:'4:30 PM',mine:false},
+  ]},
+  'Jordan':{sub:'Parent chat',msgs:[
+    {from:'JO',bg:'rgba(0,212,184,.2)',c:'var(--teal)',text:"Can you pick up Sam today?",time:'1:00 PM',mine:false},
+    {from:'AJ',bg:'rgba(124,111,255,.25)',c:'var(--accent2)',text:"Yes I got it!",time:'1:02 PM',mine:true},
+  ]},
+  'Riley':{sub:'You & Riley',msgs:[
+    {from:'AJ',bg:'rgba(124,111,255,.25)',c:'var(--accent2)',text:"Riley, remember dishes tonight!",time:'3:00 PM',mine:true},
+    {from:'RI',bg:'rgba(255,181,71,.2)',c:'var(--amber)',text:"Ok I'll do dishes after school",time:'3:08 PM',mine:false},
+  ]},
+  'Sam':{sub:'You & Sam',msgs:[
+    {from:'SA',bg:'rgba(255,107,138,.2)',c:'var(--rose)',text:"Can we have pizza Friday?",time:'9:00 AM',mine:false},
+    {from:'AJ',bg:'rgba(124,111,255,.25)',c:'var(--accent2)',text:"Maybe! We'll see 😄",time:'9:05 AM',mine:true},
+  ]},
+};
+let activeThread = 'Family';
+function switchThread(el, name, sub) {
+  document.querySelectorAll('.thread').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); activeThread = name;
+  document.getElementById('thread-name').textContent = name;
+  document.getElementById('thread-sub').textContent = sub;
+  const t = threads[name]||{msgs:[]};
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML = t.msgs.map(m=>`<div class="msg${m.mine?' mine':''}"><div class="msg-av" style="background:${m.bg};color:${m.c}">${m.from}</div><div><div class="bubble">${m.text}</div><div class="msg-time">${m.time}</div></div></div>`).join('');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function sendMsg() {
+  const inp = document.getElementById('msg-inp');
+  const txt = inp.value.trim(); if(!txt) return;
+  const t = threads[activeThread];
+  if(!t) return;
+  const now = new Date().toLocaleTimeString('default',{hour:'numeric',minute:'2-digit'});
+  t.msgs.push({from:'AJ',bg:'rgba(124,111,255,.25)',c:'var(--accent2)',text:txt,time:now,mine:true});
+  const msgs = document.getElementById('chat-msgs');
+  const el = document.createElement('div'); el.className='msg mine';
+  el.innerHTML=`<div class="msg-av" style="background:rgba(124,111,255,.25);color:var(--accent2)">AJ</div><div><div class="bubble">${txt}</div><div class="msg-time">${now}</div></div>`;
+  msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight; inp.value='';
+}
+
+// ── MODALS ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── FORMS ──
+function saveEvent() {
+  const title = document.getElementById('ev-title').value.trim();
+  if(!title){ showToast('error','Please enter a title'); return; }
+  showToast('success', `Event "${title}" saved`);
+  closeModal('add-event-modal');
+  document.getElementById('ev-title').value='';
+}
+function addTask() {
+  const title = document.getElementById('task-title-in').value.trim();
+  const type = document.getElementById('task-type-in').value;
+  const assign = document.getElementById('task-assign-in').value;
+  const due = document.getElementById('task-due-in').value;
+  if(!title){ showToast('error','Please enter a task name'); return; }
+  const listId = type==='chore' ? 'chore-list' : 'task-list';
+  const list = document.getElementById(listId);
+  const id = 'new-'+Date.now();
+  const el = document.createElement('div'); el.className='row-item'; el.id=id;
+  el.innerHTML=`<div class="chk" onclick="toggleTask(this,'${id}')"></div><div class="row-body"><div class="row-title">${title}</div><div class="row-sub">${due} · ${assign}</div></div><div class="badge b-amber">Pending</div>`;
+  list.appendChild(el);
+  if(type==='task'){ totalTasks++; updateTaskCount(); }
+  closeModal('add-task-modal');
+  document.getElementById('task-title-in').value='';
+  showToast('success', `Task "${title}" added`);
+}
+function addReminder() {
+  const title = document.getElementById('rem-title').value.trim();
+  const date = document.getElementById('rem-date').value;
+  const amt = document.getElementById('rem-amt').value;
+  if(!title){ showToast('error','Please enter a title'); return; }
+  const list = document.getElementById('appt-list');
+  const el = document.createElement('div'); el.className='row-item';
+  const dateStr = date ? new Date(date+'T00:00:00').toLocaleDateString('default',{month:'short',day:'numeric'}) : '';
+  el.innerHTML=`<div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">${title}</div><div class="row-sub">${dateStr}${amt?' · '+amt:''}</div></div><div class="badge b-blue">Upcoming</div>`;
+  list.appendChild(el);
+  closeModal('add-reminder-modal');
+  document.getElementById('rem-title').value=''; document.getElementById('rem-date').value=''; document.getElementById('rem-amt').value='';
+  showToast('success', `Reminder "${title}" saved`);
+}
+function addGrocery() {
+  const name = document.getElementById('groc-name').value.trim();
+  const qty = document.getElementById('groc-qty').value.trim()||'x1';
+  const cat = document.getElementById('groc-cat').value;
+  const price = document.getElementById('groc-price').value;
+  if(!name){ showToast('error','Please enter an item name'); return; }
+  const list = document.getElementById('grocery-list');
+  const el = document.createElement('div'); el.className='grocery-item';
+  el.innerHTML=`<div class="chk"></div><div class="g-qty">${qty}</div><div class="row-body"><div class="row-title">${name}</div><div class="row-sub">${cat}${price?' · '+price:''}</div></div>`;
+  list.appendChild(el);
+  closeModal('add-grocery-modal');
+  document.getElementById('groc-name').value=''; document.getElementById('groc-qty').value=''; document.getElementById('groc-price').value='';
+  showToast('success', `${name} added to list`);
+}
+function addPin() {
+  const type = document.getElementById('pin-type').value;
+  const title = document.getElementById('pin-title-inp').value.trim();
+  const body = document.getElementById('pin-body-inp').value.trim();
+  const vis = document.getElementById('pin-vis').value;
+  if(!title){ showToast('error','Please enter a title'); return; }
+  const iconMap={NOTE:'ti-heart',REMINDER:'ti-alert-circle',GROCERY:'ti-list',ACHIEVEMENT:'ti-star',EVENT:'ti-calendar',HOUSE:'ti-home'};
+  const el = document.createElement('div'); el.className='pin';
+  el.innerHTML=`<div class="pin-type"><i class="ti ${iconMap[type]||'ti-note'}"></i>${type}</div><div class="pin-title">${title}</div><div class="pin-body">${body||'No details added.'}</div><div class="pin-footer"><div class="pin-from">Alex · just now</div><div class="pin-vis"><i class="ti ti-users"></i> ${vis}</div></div>`;
+  document.getElementById('pin-grid').prepend(el);
+  closeModal('pin-modal');
+  document.getElementById('pin-title-inp').value=''; document.getElementById('pin-body-inp').value='';
+  showToast('success', 'Posted to shared board');
+}
+function sendInvite() {
+  const name = document.getElementById('inv-name').value.trim();
+  const email = document.getElementById('inv-email').value.trim();
+  if(!name||!email){ showToast('error','Please enter name and email'); return; }
+  closeModal('invite-modal');
+  document.getElementById('inv-name').value=''; document.getElementById('inv-email').value='';
+  showToast('success', `Invite sent to ${name}`);
+}
+
+// ── AI ASSISTANT ──
+async function sendAI() {
+  const inp = document.getElementById('ai-inp');
+  const txt = inp.value.trim(); if(!txt) return;
+  inp.value=''; appendAIMsg(txt, true);
+  const typing = appendTyping();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:600,
+        system:`You are LifeHub AI, a friendly family life assistant. The Johnson family uses LifeHub to manage their daily life: tasks, chores, meals, finances, grocery budget ($500/week), work schedules, reminders, and family communication. 
+Family: Alex (parent, works shifts), Jordan (parent), Riley (teen 14), Sam (child 9).
+Today: Monday May 18, 2026.
+Be concise, warm, and practical. Give actionable advice. Never share or discuss financial account numbers or sensitive data.
+Format responses clearly with short paragraphs or bullet points.`,
+        messages:[{role:'user',content:txt}]
+      })
+    });
+    typing.remove();
+    if(res.ok){
+      const data = await res.json();
+      const reply = data.content?.map(c=>c.text||'').join('') || 'I had trouble responding. Please try again.';
+      appendAIMsg(reply, false);
+    } else {
+      appendAIMsg("I'm having trouble connecting right now. Here's a quick tip: review your upcoming reminders and plan tomorrow's meals tonight to save time in the morning!", false);
+    }
+  } catch {
+    typing.remove();
+    appendAIMsg("I'm offline right now, but I'm here to help when you reconnect! In the meantime, check your Reminders tab for upcoming bills.", false);
+  }
+}
+function appendAIMsg(text, isUser) {
+  const msgs = document.getElementById('ai-msgs');
+  const el = document.createElement('div'); el.className='ai-msg'+(isUser?' user':'');
+  if(isUser){
+    el.innerHTML=`<div class="m-av" style="width:28px;height:28px;font-size:9px;background:rgba(124,111,255,.25);color:var(--accent2)">AJ</div><div><div class="ai-bubble">${text}</div></div>`;
+  } else {
+    el.innerHTML=`<div class="m-av" style="width:28px;height:28px;font-size:11px;background:linear-gradient(135deg,#7c6fff,#c084fc);color:#fff"><i class="ti ti-robot" style="font-size:13px"></i></div><div><div class="ai-bubble">${text.replace(/\n/g,'<br>')}</div></div>`;
+  }
+  msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight; return el;
+}
+function appendTyping() {
+  const msgs = document.getElementById('ai-msgs');
+  const el = document.createElement('div'); el.className='ai-msg';
+  el.innerHTML=`<div class="m-av" style="width:28px;height:28px;font-size:11px;background:linear-gradient(135deg,#7c6fff,#c084fc);color:#fff"><i class="ti ti-robot" style="font-size:13px"></i></div><div class="ai-typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight; return el;
+}
+function aiQuick(prompt) {
+  document.getElementById('ai-inp').value = prompt;
+  showPage('ai', document.querySelector('.nav-item:nth-child(9)'));
+  sendAI();
+}
+
+// ── GLOBAL SEARCH ──
+function globalSearch(val) {
+  if(!val.trim()) return;
+  // basic client-side search demo
+  const pages = {
+    'finance':['bank','money','checking','savings','stocks','bonds','investment','pay','budget'],
+    'tasks':['task','chore','todo','workout','laundry','dishes','trash','vacuum'],
+    'reminders':['remind','dentist','insurance','doctor','appointment','health'],
+    'meals':['meal','food','breakfast','lunch','dinner','calories','recipe'],
+    'grocery':['grocery','shopping','list','buy','store'],
+    'calendar':['calendar','event','schedule','date'],
+    'work':['work','shift','job','hours','paycheck','pto'],
+    'messages':['message','chat','talk'],
+    'family':['family','member','permission','share'],
+    'board':['board','pin','note','post'],
+  };
+  const v = val.toLowerCase();
+  for(const [page, keys] of Object.entries(pages)){
+    if(keys.some(k=>v.includes(k))){
+      showPage(page, null);
+      showToast('info',`Showing ${page} for "${val}"`);
+      document.getElementById('global-search').value='';
+      return;
+    }
+  }
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(type, msg) {
+  const toast = document.getElementById('toast');
+  const icon = document.getElementById('toast-icon');
+  document.getElementById('toast-msg').textContent = msg;
+  icon.className = type==='success'?'ti ti-check':type==='error'?'ti ti-x':'ti ti-info-circle';
+  icon.style.color = type==='success'?'var(--green)':type==='error'?'var(--rose)':'var(--blue)';
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 3000);
+}
+
+// ── KEY BINDINGS ──
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+});
+</script>
+</body>
+</html>

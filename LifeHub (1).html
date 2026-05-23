@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeHub — Family Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #0e0f14;
+  --bg2: #15161d;
+  --bg3: #1c1d27;
+  --bg4: #232535;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f0f5;
+  --text2: #9090a8;
+  --text3: #5a5a72;
+  --accent: #6c63ff;
+  --accent2: #8b83ff;
+  --teal: #2dd4bf;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --green: #34d399;
+  --blue: #60a5fa;
+  --purple: #a78bfa;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font: 'Sora', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── APP SHELL ── */
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh}
+.main{flex:1;overflow-y:auto;min-width:0}
+
+/* SIDEBAR */
+.logo{padding:22px 20px 16px;border-bottom:1px solid var(--border)}
+.logo-mark{font-size:18px;font-weight:600;letter-spacing:-.5px;color:var(--text)}
+.logo-mark span{color:var(--accent2)}
+.logo-sub{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.08em;margin-top:2px}
+
+.family-switcher{padding:14px 16px;border-bottom:1px solid var(--border)}
+.family-label{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.06em;margin-bottom:8px}
+.member-chips{display:flex;flex-direction:column;gap:6px}
+.member-chip{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid transparent;transition:all .15s}
+.member-chip:hover{background:var(--bg3)}
+.member-chip.active{background:var(--bg4);border-color:var(--border2)}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.chip-info{min-width:0}
+.chip-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip-role{font-size:10px;color:var(--text3)}
+.chip-dot{width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:auto;flex-shrink:0}
+.chip-dot.away{background:var(--amber)}
+.chip-dot.offline{background:var(--text3)}
+
+.nav-links{padding:14px 10px;flex:1;overflow-y:auto}
+.nav-section{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.06em;padding:0 8px;margin-bottom:6px;margin-top:12px}
+.nav-section:first-child{margin-top:0}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative}
+.nav-link:hover{background:var(--bg3);color:var(--text)}
+.nav-link.active{background:var(--bg4);color:var(--text);font-weight:500}
+.nav-link.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:60%;width:2px;background:var(--accent2);border-radius:2px}
+.nav-link i{font-size:16px;width:18px;text-align:center}
+.nav-badge{margin-left:auto;font-size:10px;font-family:var(--mono);background:var(--rose);color:#fff;padding:1px 6px;border-radius:10px}
+
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border)}
+.settings-btn{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);cursor:pointer;background:none;border:none;width:100%}
+.settings-btn:hover{color:var(--text2)}
+.settings-btn i{font-size:15px}
+
+/* MAIN HEADER */
+.page-header{padding:24px 28px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.page-title{font-size:22px;font-weight:600;letter-spacing:-.4px;color:var(--text)}
+.page-sub{font-size:13px;color:var(--text3);margin-top:3px}
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:var(--radius-sm);font-size:12px;font-family:var(--font);cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all .15s;font-weight:500}
+.btn:hover{background:var(--bg4);color:var(--text)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.btn i{font-size:14px}
+
+/* CONTENT */
+.page-content{padding:20px 28px 40px}
+.section{display:none}
+.section.active{display:block}
+
+/* METRIC CARDS */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.metric-icon{font-size:18px;margin-bottom:10px}
+.metric-label{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:.04em;margin-bottom:4px}
+.metric-val{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-.5px}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.metric-trend-up{color:var(--green)}
+.metric-trend-down{color:var(--rose)}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:500;color:var(--text2)}
+.card-action{font-size:11px;color:var(--accent2);cursor:pointer;background:none;border:none;font-family:var(--font)}
+.card-action:hover{color:var(--text)}
+
+/* ROW ITEMS */
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.row-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.row-body{flex:1;min-width:0}
+.row-title{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.row-val{font-size:12px;font-family:var(--mono);color:var(--text2);white-space:nowrap}
+
+/* BADGES */
+.badge{font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0;font-weight:500}
+.b-green{background:rgba(52,211,153,.15);color:var(--green)}
+.b-amber{background:rgba(251,191,36,.15);color:var(--amber)}
+.b-red{background:rgba(251,113,133,.15);color:var(--rose)}
+.b-blue{background:rgba(96,165,250,.15);color:var(--blue)}
+.b-purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.b-teal{background:rgba(45,212,191,.15);color:var(--teal)}
+.b-gray{background:var(--bg4);color:var(--text3)}
+
+/* PROGRESS BAR */
+.prog-wrap{height:5px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-top:8px}
+.prog-fill{height:100%;border-radius:4px;transition:width .4s}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* TASK CHECKS */
+.check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.check:hover{border-color:var(--accent2)}
+.check.done{background:var(--accent);border-color:var(--accent)}
+.check.done i{color:#fff;font-size:11px}
+.row.strikethrough .row-title{text-decoration:line-through;opacity:.4}
+
+/* CALENDAR */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-month{font-size:14px;font-weight:600;color:var(--text)}
+.cal-nav-btn{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;color:var(--text2);font-size:13px}
+.cal-nav-btn:hover{background:var(--bg4);color:var(--text)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-hdr{font-size:10px;font-family:var(--mono);color:var(--text3);text-align:center;padding:4px 0;letter-spacing:.05em}
+.cal-day{font-size:12px;text-align:center;padding:6px 2px;border-radius:8px;cursor:pointer;color:var(--text3);min-height:46px;display:flex;flex-direction:column;align-items:center;gap:3px;border:1px solid transparent;transition:all .15s}
+.cal-day:hover{background:var(--bg3);color:var(--text)}
+.cal-day.today{background:rgba(108,99,255,.2);color:var(--accent2);font-weight:600;border-color:rgba(108,99,255,.3)}
+.cal-day.has-ev{border-color:var(--border)}
+.cal-day.other{opacity:.25}
+.cal-dots{display:flex;gap:2px;justify-content:center;flex-wrap:wrap}
+.cal-dot{width:4px;height:4px;border-radius:50%}
+
+/* FINANCE ACCOUNTS */
+.account{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.account:last-child{border-bottom:none}
+.acc-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.acc-info{flex:1;min-width:0}
+.acc-name{font-size:13px;font-weight:500;color:var(--text)}
+.acc-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.acc-val{text-align:right}
+.acc-amount{font-size:15px;font-weight:600;font-family:var(--mono);color:var(--text)}
+.acc-change{font-size:11px;margin-top:1px}
+
+/* FAMILY */
+.family-member-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden}
+.member-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.member-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0}
+.member-name{font-size:15px;font-weight:500;color:var(--text)}
+.member-role{font-size:11px;color:var(--text3);margin-top:1px}
+.member-status{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
+.status-dot{width:6px;height:6px;border-radius:50%}
+.share-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.share-tag{font-size:11px;padding:3px 9px;border-radius:6px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
+.share-tag.on{background:rgba(108,99,255,.15);color:var(--accent2);border-color:rgba(108,99,255,.3)}
+.share-tag i{font-size:11px}
+.permission-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.permission-row:last-child{border-bottom:none}
+.perm-label{font-size:12px;color:var(--text2)}
+.perm-sub{font-size:10px;color:var(--text3)}
+.toggle{width:36px;height:20px;border-radius:20px;background:var(--bg4);border:1px solid var(--border);cursor:pointer;position:relative;transition:all .2s;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:18px}
+
+/* CHAT / MESSAGES */
+.chat-layout{display:grid;grid-template-columns:200px 1fr;gap:0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;min-height:400px}
+.chat-sidebar{border-right:1px solid var(--border);padding:14px 0}
+.chat-thread{padding:8px 0;cursor:pointer;transition:all .15s;border-left:2px solid transparent}
+.chat-thread:hover{background:var(--bg3)}
+.chat-thread.active{background:var(--bg3);border-left-color:var(--accent2)}
+.thread-inner{padding:8px 14px}
+.thread-name{font-size:12px;font-weight:500;color:var(--text)}
+.thread-preview{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thread-time{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.chat-main{display:flex;flex-direction:column}
+.chat-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.chat-messages{flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:12px;max-height:300px;overflow-y:auto}
+.msg{display:flex;gap:10px;align-items:flex-end}
+.msg.mine{flex-direction:row-reverse}
+.msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.msg-bubble{max-width:70%;padding:9px 13px;border-radius:12px;font-size:12px;line-height:1.5;color:var(--text)}
+.msg .msg-bubble{background:var(--bg4)}
+.msg.mine .msg-bubble{background:var(--accent);color:#fff}
+.msg-time{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:4px;text-align:center;align-self:center}
+.chat-input-wrap{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;font-family:var(--font);color:var(--text);outline:none}
+.chat-input::placeholder{color:var(--text3)}
+.chat-input:focus{border-color:var(--border2)}
+.send-btn{background:var(--accent);border:none;border-radius:8px;padding:8px 14px;cursor:pointer;color:#fff;font-size:13px}
+.send-btn:hover{background:var(--accent2)}
+
+/* SHARED BOARD */
+.pin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.pin-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative}
+.pin-type{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.05em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.pin-type i{font-size:12px}
+.pin-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.pin-body{font-size:12px;color:var(--text3);line-height:1.5}
+.pin-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.pin-from{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.pin-vis{font-size:10px;display:flex;align-items:center;gap:4px;color:var(--text3)}
+.pin-vis i{font-size:11px}
+
+/* INPUT */
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--border2)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+select option{background:var(--bg3)}
+
+/* WORK SCHEDULE */
+.schedule-row{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.schedule-row:last-child{border-bottom:none}
+.sched-day{font-size:12px;font-family:var(--mono);color:var(--text3)}
+.sched-bar{height:28px;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:500;color:var(--text)}
+.sched-hrs{font-size:11px;font-family:var(--mono);color:var(--text3)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.05em;margin-bottom:5px;display:block}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+/* SECTION DIVIDER */
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0 14px}
+.div-line{flex:1;height:1px;background:var(--border)}
+.div-label{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;white-space:nowrap}
+
+/* LOCK NOTICE */
+.lock-notice{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:14px}
+.lock-notice i{font-size:14px;color:var(--teal)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
+
+/* NOTIFICATIONS */
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--rose);position:absolute;top:-2px;right:-2px}
+
+/* GROCERY */
+.grocery-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.grocery-item:last-child{border-bottom:none}
+.qty{font-size:11px;font-family:var(--mono);color:var(--accent2);min-width:28px}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .sidebar{width:60px}
+  .logo-mark,.logo-sub,.chip-info,.chip-dot,.nav-section,.nav-link span,.family-label,.member-chips .chip-name,.member-chips .chip-role{display:none}
+  .nav-link{justify-content:center;padding:10px}
+  .member-chip{justify-content:center;padding:7px}
+  .two-col,.three-col{grid-template-columns:1fr}
+  .page-header{padding:16px 16px 0}
+  .page-content{padding:14px 16px 40px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">Life<span>Hub</span></div>
+    <div class="logo-sub">FAMILY COMMAND CENTER</div>
+  </div>
+
+  <div class="family-switcher">
+    <div class="family-label">VIEWING AS</div>
+    <div class="member-chips">
+      <div class="member-chip active" onclick="switchMember(this,'Alex (You)','Parent')">
+        <div class="avatar" style="background:rgba(108,99,255,.25);color:#a78bfa">AJ</div>
+        <div class="chip-info"><div class="chip-name">Alex</div><div class="chip-role">Parent</div></div>
+        <div class="chip-dot"></div>
+      </div>
+      <div class="member-chip" onclick="switchMember(this,'Jordan','Parent')">
+        <div class="avatar" style="background:rgba(45,212,191,.2);color:#2dd4bf">JO</div>
+        <div class="chip-info"><div class="chip-name">Jordan</div><div class="chip-role">Parent</div></div>
+        <div class="chip-dot"></div>
+      </div>
+      <div class="member-chip" onclick="switchMember(this,'Riley','Child · 14')">
+        <div class="avatar" style="background:rgba(251,191,36,.2);color:#fbbf24">RI</div>
+        <div class="chip-info"><div class="chip-name">Riley</div><div class="chip-role">Child · 14</div></div>
+        <div class="chip-dot away"></div>
+      </div>
+      <div class="member-chip" onclick="switchMember(this,'Sam','Child · 9')">
+        <div class="avatar" style="background:rgba(251,113,133,.2);color:#fb7185">SA</div>
+        <div class="chip-info"><div class="chip-name">Sam</div><div class="chip-role">Child · 9</div></div>
+        <div class="chip-dot offline"></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav-links">
+    <div class="nav-section">MAIN</div>
+    <button class="nav-link active" onclick="showSection('overview',this)"><i class="ti ti-layout-dashboard"></i><span>Overview</span></button>
+    <button class="nav-link" onclick="showSection('calendar',this)"><i class="ti ti-calendar"></i><span>Calendar</span></button>
+    <button class="nav-link" onclick="showSection('tasks',this)"><i class="ti ti-checks"></i><span>Tasks & Chores</span><span class="nav-badge">3</span></button>
+    <button class="nav-link" onclick="showSection('reminders',this)"><i class="ti ti-bell"></i><span>Reminders</span><span class="nav-badge">2</span></button>
+
+    <div class="nav-section">MONEY</div>
+    <button class="nav-link" onclick="showSection('finance',this)"><i class="ti ti-building-bank"></i><span>Finance</span></button>
+    <button class="nav-link" onclick="showSection('grocery',this)"><i class="ti ti-shopping-cart"></i><span>Grocery</span></button>
+
+    <div class="nav-section">DAILY LIFE</div>
+    <button class="nav-link" onclick="showSection('meals',this)"><i class="ti ti-salad"></i><span>Meals</span></button>
+    <button class="nav-link" onclick="showSection('work',this)"><i class="ti ti-briefcase"></i><span>Work Schedule</span></button>
+
+    <div class="nav-section">FAMILY</div>
+    <button class="nav-link" onclick="showSection('family',this)"><i class="ti ti-users"></i><span>Family Hub</span></button>
+    <button class="nav-link" onclick="showSection('messages',this)"><i class="ti ti-message-circle"></i><span>Messages</span></button>
+    <button class="nav-link" onclick="showSection('board',this)"><i class="ti ti-pinned"></i><span>Shared Board</span></button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="settings-btn" onclick="showSection('settings',document.querySelector('.nav-link.active'))"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- ── OVERVIEW ── -->
+  <div class="section active" id="sec-overview">
+    <div class="page-header">
+      <div><div class="page-title">Good morning, Alex</div><div class="page-sub" id="overview-date"></div></div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('add-event-modal')"><i class="ti ti-plus"></i> Quick add</button>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-icon" style="color:var(--teal)"><i class="ti ti-building-bank"></i></div><div class="metric-label">NET WORTH</div><div class="metric-val">$84,320</div><div class="metric-sub metric-trend-up">+$1,240 this month</div></div>
+        <div class="metric-card"><div class="metric-icon" style="color:var(--amber)"><i class="ti ti-checks"></i></div><div class="metric-label">TASKS TODAY</div><div class="metric-val">5/8</div><div class="metric-sub">3 still pending</div></div>
+        <div class="metric-card"><div class="metric-icon" style="color:var(--rose)"><i class="ti ti-credit-card"></i></div><div class="metric-label">BILLS DUE</div><div class="metric-val">$507</div><div class="metric-sub">Next: May 20</div></div>
+        <div class="metric-card"><div class="metric-icon" style="color:var(--purple)"><i class="ti ti-shopping-cart"></i></div><div class="metric-label">GROCERY LEFT</div><div class="metric-val">$310</div><div class="metric-sub">of $500 budget</div></div>
+        <div class="metric-card"><div class="metric-icon" style="color:var(--green)"><i class="ti ti-users"></i></div><div class="metric-label">FAMILY ONLINE</div><div class="metric-val">2/4</div><div class="metric-sub">Alex & Jordan</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Urgent reminders</div><button class="card-action" onclick="showSection('reminders',null)">View all</button></div>
+          <div class="row"><div class="row-dot" style="background:var(--rose)"></div><div class="row-body"><div class="row-title">Health insurance</div><div class="row-sub">May 20 · $320</div></div><div class="badge b-red">2 days</div></div>
+          <div class="row"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Dentist · Dr. Patel</div><div class="row-sub">May 21 · 10:30 AM</div></div><div class="badge b-amber">3 days</div></div>
+          <div class="row"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Car insurance</div><div class="row-sub">May 22 · $187</div></div><div class="badge b-amber">4 days</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Today's tasks</div><button class="card-action" onclick="showSection('tasks',null)">View all</button></div>
+          <div class="row" id="ov-t1"><div class="check done" onclick="ovCheck(this,'ov-t1')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Morning workout</div></div></div>
+          <div class="row" id="ov-t2"><div class="check" onclick="ovCheck(this,'ov-t2')"></div><div class="row-body"><div class="row-title">Grocery run</div><div class="row-sub">$120 budget</div></div></div>
+          <div class="row" id="ov-t3"><div class="check" onclick="ovCheck(this,'ov-t3')"></div><div class="row-body"><div class="row-title">Pick up kids · 3 PM</div></div></div>
+          <div class="row" id="ov-t4"><div class="check" onclick="ovCheck(this,'ov-t4')"></div><div class="row-body"><div class="row-title">Cook dinner</div></div></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Accounts snapshot</div><button class="card-action" onclick="showSection('finance',null)">View all</button></div>
+          <div class="row"><div class="row-dot" style="background:var(--green)"></div><div class="row-body"><div class="row-title">Checking</div><div class="row-sub">Chase ····4821</div></div><div class="row-val">$3,840</div></div>
+          <div class="row"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Savings</div><div class="row-sub">4.60% APY</div></div><div class="row-val">$18,500</div></div>
+          <div class="row"><div class="row-dot" style="background:var(--purple)"></div><div class="row-body"><div class="row-title">Investments</div><div class="row-sub">Stocks + bonds</div></div><div class="row-val">$61,980</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Family activity</div><button class="card-action" onclick="showSection('messages',null)">Messages</button></div>
+          <div class="row"><div class="avatar" style="width:28px;height:28px;font-size:10px;background:rgba(45,212,191,.2);color:var(--teal)">JO</div><div class="row-body"><div class="row-title">Jordan completed 3 chores</div><div class="row-sub">2 hours ago</div></div></div>
+          <div class="row"><div class="avatar" style="width:28px;height:28px;font-size:10px;background:rgba(251,191,36,.2);color:var(--amber)">RI</div><div class="row-body"><div class="row-title">Riley added a reminder</div><div class="row-sub">4 hours ago</div></div></div>
+          <div class="row"><div class="avatar" style="width:28px;height:28px;font-size:10px;background:rgba(251,113,133,.2);color:var(--rose)">SA</div><div class="row-body"><div class="row-title">Sam finished homework task</div><div class="row-sub">Yesterday</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CALENDAR ── -->
+  <div class="section" id="sec-calendar">
+    <div class="page-header">
+      <div><div class="page-title">Calendar</div><div class="page-sub">All family events in one view</div></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="openModal('add-event-modal')"><i class="ti ti-plus"></i> Add event</button></div>
+    </div>
+    <div class="page-content">
+      <div class="card">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+          <div class="cal-month" id="cal-label">May 2026</div>
+          <button class="cal-nav-btn" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--rose);display:inline-block"></span>Payments</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--blue);display:inline-block"></span>Appointments</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block"></span>Work</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);display:inline-block"></span>Personal</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block"></span>Chores/Meals</span>
+        </div>
+        <div class="cal-grid" id="cal-grid">
+          <div class="cal-hdr">SUN</div><div class="cal-hdr">MON</div><div class="cal-hdr">TUE</div><div class="cal-hdr">WED</div><div class="cal-hdr">THU</div><div class="cal-hdr">FRI</div><div class="cal-hdr">SAT</div>
+        </div>
+      </div>
+      <div class="card" id="cal-detail"><div style="font-size:13px;color:var(--text3)">Click a day to see events</div></div>
+    </div>
+  </div>
+
+  <!-- ── TASKS ── -->
+  <div class="section" id="sec-tasks">
+    <div class="page-header">
+      <div><div class="page-title">Tasks & Chores</div><div class="page-sub">Daily to-dos and household chores</div></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="openModal('add-task-modal')"><i class="ti ti-plus"></i> Add task</button></div>
+    </div>
+    <div class="page-content">
+      <div class="metric-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="metric-card"><div class="metric-label">COMPLETED TODAY</div><div class="metric-val" id="tasks-done-count">3</div></div>
+        <div class="metric-card"><div class="metric-label">REMAINING</div><div class="metric-val" id="tasks-left-count">5</div></div>
+        <div class="metric-card"><div class="metric-label">CHORES DONE</div><div class="metric-val">2/5</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Daily tasks</div></div>
+          <div id="task-list">
+            <div class="row strikethrough" id="task-1"><div class="check done" onclick="toggleTaskItem(this,'task-1')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Morning workout</div><div class="row-sub">7:00 AM</div></div><div class="badge b-green">Done</div></div>
+            <div class="row strikethrough" id="task-2"><div class="check done" onclick="toggleTaskItem(this,'task-2')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Pack kids lunches</div><div class="row-sub">7:30 AM</div></div><div class="badge b-green">Done</div></div>
+            <div class="row" id="task-3"><div class="check" onclick="toggleTaskItem(this,'task-3')"></div><div class="row-body"><div class="row-title">Grocery run</div><div class="row-sub">$120 · Trader Joe's</div></div><div class="badge b-amber">Pending</div></div>
+            <div class="row" id="task-4"><div class="check" onclick="toggleTaskItem(this,'task-4')"></div><div class="row-body"><div class="row-title">Pick up kids · 3 PM</div></div><div class="badge b-amber">Pending</div></div>
+            <div class="row" id="task-5"><div class="check" onclick="toggleTaskItem(this,'task-5')"></div><div class="row-body"><div class="row-title">Cook dinner</div><div class="row-sub">Salmon & veggies</div></div><div class="badge b-amber">Pending</div></div>
+          </div>
+          <div class="prog-wrap" style="margin-top:12px"><div class="prog-fill" id="task-prog" style="width:40%;background:var(--accent)"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Chores</div></div>
+          <div id="chore-list">
+            <div class="row" id="chore-1"><div class="check" onclick="toggleTaskItem(this,'chore-1')"></div><div class="row-body"><div class="row-title">Vacuum living room</div><div class="row-sub">Weekly · Alex</div></div><div class="badge b-red">Today</div></div>
+            <div class="row" id="chore-2"><div class="check" onclick="toggleTaskItem(this,'chore-2')"></div><div class="row-body"><div class="row-title">Laundry</div><div class="row-sub">Bi-weekly · Jordan</div></div><div class="badge b-red">Today</div></div>
+            <div class="row strikethrough" id="chore-3"><div class="check done" onclick="toggleTaskItem(this,'chore-3')"><i class="ti ti-check"></i></div><div class="row-body"><div class="row-title">Dishes</div><div class="row-sub">Jordan</div></div><div class="badge b-green">Done</div></div>
+            <div class="row" id="chore-4"><div class="check" onclick="toggleTaskItem(this,'chore-4')"></div><div class="row-body"><div class="row-title">Take out trash</div><div class="row-sub">Pickup: Wed · Alex</div></div><div class="badge b-amber">Tomorrow</div></div>
+            <div class="row" id="chore-5"><div class="check" onclick="toggleTaskItem(this,'chore-5')"></div><div class="row-body"><div class="row-title">Mow lawn</div><div class="row-sub">Bi-weekly · Alex</div></div><div class="badge b-gray">Sat</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REMINDERS ── -->
+  <div class="section" id="sec-reminders">
+    <div class="page-header">
+      <div><div class="page-title">Reminders</div><div class="page-sub">Appointments, payments & renewals</div></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="openModal('add-reminder-modal')"><i class="ti ti-plus"></i> Add reminder</button></div>
+    </div>
+    <div class="page-content">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Upcoming payments</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--rose)"></div><div class="row-body"><div class="row-title">Health insurance · BlueCross</div><div class="row-sub">May 20 · $320/mo</div></div><div class="badge b-red">2 days</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--rose)"></div><div class="row-body"><div class="row-title">Car insurance · State Farm</div><div class="row-sub">May 22 · $187/mo</div></div><div class="badge b-amber">4 days</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Childcare · Sunshine Daycare</div><div class="row-sub">May 23 · $650/mo</div></div><div class="badge b-amber">5 days</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Home insurance · Allstate</div><div class="row-sub">Jun 1 · $1,200/yr</div></div><div class="badge b-green">14 days</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--purple)"></div><div class="row-body"><div class="row-title">Car registration renewal</div><div class="row-sub">Jun 15 · ~$180</div></div><div class="badge b-green">28 days</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Appointments</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Dentist · Dr. Patel</div><div class="row-sub">May 21 · 10:30 AM · Alex</div></div><div class="badge b-amber">3 days</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--teal)"></div><div class="row-body"><div class="row-title">Annual physical · Dr. Chen</div><div class="row-sub">Jun 10 · 9:00 AM · Alex</div></div><div class="badge b-green">23 days</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--purple)"></div><div class="row-body"><div class="row-title">Riley — pediatrician checkup</div><div class="row-sub">Jun 18 · 2:00 PM</div></div><div class="badge b-green">31 days</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FINANCE ── -->
+  <div class="section" id="sec-finance">
+    <div class="page-header">
+      <div><div class="page-title">Finance</div><div class="page-sub">Banking, investments & spending</div></div>
+    </div>
+    <div class="page-content">
+      <div class="lock-notice"><i class="ti ti-lock"></i> Financial data is encrypted and only visible to parent accounts.</div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">TOTAL NET WORTH</div><div class="metric-val">$84,320</div><div class="metric-sub metric-trend-up">+$1,240 MTD</div></div>
+        <div class="metric-card"><div class="metric-label">CHECKING</div><div class="metric-val">$3,840</div><div class="metric-sub metric-trend-up">+$2,400 deposit</div></div>
+        <div class="metric-card"><div class="metric-label">SAVINGS</div><div class="metric-val">$18,500</div><div class="metric-sub">4.60% APY</div></div>
+        <div class="metric-card"><div class="metric-label">INVESTMENTS</div><div class="metric-val">$61,980</div><div class="metric-sub metric-trend-up">+2.4% MTD</div></div>
+      </div>
+
+      <div class="divider"><div class="div-line"></div><div class="div-label">BANK ACCOUNTS</div><div class="div-line"></div></div>
+      <div class="card">
+        <div class="account">
+          <div class="acc-icon" style="background:rgba(96,165,250,.15);color:var(--blue)"><i class="ti ti-building-bank"></i></div>
+          <div class="acc-info"><div class="acc-name">Chase Checking ····4821</div><div class="acc-sub">Direct deposit · Primary spending</div></div>
+          <div class="acc-val"><div class="acc-amount">$3,840.22</div><div class="acc-change" style="color:var(--green)">+$2,400 deposit</div></div>
+        </div>
+        <div class="account">
+          <div class="acc-icon" style="background:rgba(52,211,153,.15);color:var(--green)"><i class="ti ti-piggy-bank"></i></div>
+          <div class="acc-info"><div class="acc-name">Marcus Savings ····9042</div><div class="acc-sub">High-yield savings · 4.60% APY</div></div>
+          <div class="acc-val"><div class="acc-amount">$18,500.00</div><div class="acc-change" style="color:var(--green)">+$71 interest</div></div>
+        </div>
+      </div>
+
+      <div class="divider"><div class="div-line"></div><div class="div-label">INVESTMENTS</div><div class="div-line"></div></div>
+      <div class="card">
+        <div class="account">
+          <div class="acc-icon" style="background:rgba(167,139,250,.15);color:var(--purple)"><i class="ti ti-chart-line"></i></div>
+          <div class="acc-info"><div class="acc-name">Stocks · Fidelity</div><div class="acc-sub">S&P 500 index · VOO, AAPL, MSFT</div></div>
+          <div class="acc-val"><div class="acc-amount">$44,120</div><div class="acc-change" style="color:var(--green)">+2.4% MTD</div></div>
+        </div>
+        <div class="account">
+          <div class="acc-icon" style="background:rgba(251,191,36,.15);color:var(--amber)"><i class="ti ti-file-dollar"></i></div>
+          <div class="acc-info"><div class="acc-name">Bonds · Fidelity</div><div class="acc-sub">US Treasury · BND, AGG</div></div>
+          <div class="acc-val"><div class="acc-amount">$17,860</div><div class="acc-change" style="color:var(--green)">+0.6% MTD</div></div>
+        </div>
+        <div class="account">
+          <div class="acc-icon" style="background:rgba(45,212,191,.15);color:var(--teal)"><i class="ti ti-brand-coinbase"></i></div>
+          <div class="acc-info"><div class="acc-name">401(k) · Vanguard</div><div class="acc-sub">Employer match 4% · Target 2050</div></div>
+          <div class="acc-val"><div class="acc-amount">—</div><div class="acc-change" style="color:var(--text3)">Connect account</div></div>
+        </div>
+      </div>
+
+      <div class="divider"><div class="div-line"></div><div class="div-label">MONTHLY SPENDING</div><div class="div-line"></div></div>
+      <div class="card">
+        <div style="position:relative;width:100%;height:220px">
+          <canvas id="spendChart" role="img" aria-label="Bar chart of monthly spending by category">Housing 1800, Food 500, Transport 320, Health 320, Childcare 650, Savings 800.</canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GROCERY ── -->
+  <div class="section" id="sec-grocery">
+    <div class="page-header">
+      <div><div class="page-title">Grocery</div><div class="page-sub">Budget tracker & shopping list</div></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="openModal('add-grocery-modal')"><i class="ti ti-plus"></i> Add item</button></div>
+    </div>
+    <div class="page-content">
+      <div class="metric-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="metric-card"><div class="metric-label">WEEKLY BUDGET</div><div class="metric-val">$500</div></div>
+        <div class="metric-card"><div class="metric-label">SPENT</div><div class="metric-val">$190</div><div class="metric-sub metric-trend-up">38% used</div></div>
+        <div class="metric-card"><div class="metric-label">REMAINING</div><div class="metric-val">$310</div></div>
+      </div>
+      <div class="card">
+        <div class="prog-wrap" style="margin-bottom:16px"><div class="prog-fill" style="width:38%;background:var(--green)"></div></div>
+        <div class="card-header"><div class="card-title">Shopping list</div></div>
+        <div id="grocery-list">
+          <div class="grocery-item"><div class="check done"><i class="ti ti-check"></i></div><div class="qty">x2</div><div class="row-body"><div class="row-title">Salmon fillets</div><div class="row-sub">Protein · ~$18</div></div></div>
+          <div class="grocery-item"><div class="check done"><i class="ti ti-check"></i></div><div class="qty">x1</div><div class="row-body"><div class="row-title">Greek yogurt</div><div class="row-sub">Breakfast · $6</div></div></div>
+          <div class="grocery-item"><div class="check"></div><div class="qty">x3</div><div class="row-body"><div class="row-title">Broccoli crowns</div><div class="row-sub">Produce · $5</div></div></div>
+          <div class="grocery-item"><div class="check"></div><div class="qty">x1</div><div class="row-body"><div class="row-title">Almond butter</div><div class="row-sub">Pantry · $9</div></div></div>
+          <div class="grocery-item"><div class="check"></div><div class="qty">x2</div><div class="row-body"><div class="row-title">Chicken breast</div><div class="row-sub">Protein · $12</div></div></div>
+          <div class="grocery-item"><div class="check"></div><div class="qty">x1</div><div class="row-body"><div class="row-title">Quinoa</div><div class="row-sub">Pantry · $7</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MEALS ── -->
+  <div class="section" id="sec-meals">
+    <div class="page-header">
+      <div><div class="page-title">Meal Planner</div><div class="page-sub">Today's plan & calorie tracking</div></div>
+    </div>
+    <div class="page-content">
+      <div class="metric-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="metric-card"><div class="metric-label">CALORIES TODAY</div><div class="metric-val">1,720</div><div class="metric-sub">Goal: 2,000</div></div>
+        <div class="metric-card"><div class="metric-label">GROCERY SPEND</div><div class="metric-val">$190</div><div class="metric-sub">$310 remaining</div></div>
+        <div class="metric-card"><div class="metric-label">MEALS PLANNED</div><div class="metric-val">3/3</div><div class="metric-sub">All set today</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Today's meals</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--amber)"></div><div class="row-body"><div class="row-title">Breakfast — Greek yogurt parfait</div><div class="row-sub">Blueberries, granola, honey</div></div><div class="row-val">380 kcal</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--green)"></div><div class="row-body"><div class="row-title">Lunch — Grilled chicken & quinoa bowl</div><div class="row-sub">Cucumber, tomato, lemon dressing</div></div><div class="row-val">520 kcal</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--blue)"></div><div class="row-body"><div class="row-title">Dinner — Salmon & roasted vegetables</div><div class="row-sub">Broccoli, sweet potato, olive oil</div></div><div class="row-val">610 kcal</div></div>
+        <div class="row"><div class="row-dot" style="background:var(--purple)"></div><div class="row-body"><div class="row-title">Snack — Apple & almond butter</div></div><div class="row-val">210 kcal</div></div>
+        <div class="prog-wrap" style="margin-top:12px"><div class="prog-fill" style="width:86%;background:var(--green)"></div></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;text-align:right">1,720 / 2,000 kcal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WORK ── -->
+  <div class="section" id="sec-work">
+    <div class="page-header">
+      <div><div class="page-title">Work Schedule</div><div class="page-sub">This week's shifts & hours</div></div>
+    </div>
+    <div class="page-content">
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">HOURS THIS WEEK</div><div class="metric-val">40</div></div>
+        <div class="metric-card"><div class="metric-label">OVERTIME</div><div class="metric-val">0 hrs</div></div>
+        <div class="metric-card"><div class="metric-label">NEXT PAYCHECK</div><div class="metric-val">May 30</div></div>
+        <div class="metric-card"><div class="metric-label">PTO REMAINING</div><div class="metric-val">8 days</div><div class="metric-sub">of 15 annual</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Alex's schedule</div></div>
+        <div class="schedule-row"><div class="sched-day">MON</div><div class="sched-bar" style="background:var(--bg4);color:var(--text3)">Day off</div><div class="sched-hrs">—</div></div>
+        <div class="schedule-row"><div class="sched-day">TUE</div><div class="sched-bar" style="background:rgba(96,165,250,.2);color:var(--blue)">Morning · 8 AM – 4 PM</div><div class="sched-hrs">8 hrs</div></div>
+        <div class="schedule-row"><div class="sched-day">WED</div><div class="sched-bar" style="background:rgba(96,165,250,.2);color:var(--blue)">Morning · 8 AM – 4 PM</div><div class="sched-hrs">8 hrs</div></div>
+        <div class="schedule-row"><div class="sched-day">THU</div><div class="sched-bar" style="background:rgba(251,191,36,.2);color:var(--amber)">Mid · 11 AM – 7 PM</div><div class="sched-hrs">8 hrs</div></div>
+        <div class="schedule-row"><div class="sched-day">FRI</div><div class="sched-bar" style="background:rgba(251,191,36,.2);color:var(--amber)">Mid · 11 AM – 7 PM</div><div class="sched-hrs">8 hrs</div></div>
+        <div class="schedule-row"><div class="sched-day">SAT</div><div class="sched-bar" style="background:rgba(251,113,133,.2);color:var(--rose)">Late · 12 PM – 8 PM</div><div class="sched-hrs">8 hrs</div></div>
+        <div class="schedule-row"><div class="sched-day">SUN</div><div class="sched-bar" style="background:var(--bg4);color:var(--text3)">Day off</div><div class="sched-hrs">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FAMILY HUB ── -->
+  <div class="section" id="sec-family">
+    <div class="page-header">
+      <div><div class="page-title">Family Hub</div><div class="page-sub">Members, permissions & sharing controls</div></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="openModal('invite-modal')"><i class="ti ti-user-plus"></i> Invite member</button></div>
+    </div>
+    <div class="page-content">
+      <div class="lock-notice"><i class="ti ti-shield-check"></i> Sharing is opt-in. Each member controls exactly what they share and with whom.</div>
+
+      <div class="divider"><div class="div-line"></div><div class="div-label">FAMILY MEMBERS</div><div class="div-line"></div></div>
+      <div class="three-col">
+
+        <!-- Jordan -->
+        <div class="family-member-card">
+          <div class="member-header">
+            <div class="member-avatar" style="background:rgba(45,212,191,.2);color:var(--teal)">JO</div>
+            <div><div class="member-name">Jordan</div><div class="member-role">Parent · Full access</div></div>
+          </div>
+          <div class="member-status" style="margin-bottom:10px"><div class="status-dot" style="background:var(--green)"></div>Online now</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:var(--mono)">SHARES WITH YOU</div>
+          <div class="share-tags">
+            <div class="share-tag on"><i class="ti ti-building-bank"></i>Finance</div>
+            <div class="share-tag on"><i class="ti ti-calendar"></i>Calendar</div>
+            <div class="share-tag on"><i class="ti ti-checks"></i>Tasks</div>
+            <div class="share-tag on"><i class="ti ti-bell"></i>Reminders</div>
+            <div class="share-tag on"><i class="ti ti-briefcase"></i>Work</div>
+          </div>
+        </div>
+
+        <!-- Riley -->
+        <div class="family-member-card">
+          <div class="member-header">
+            <div class="member-avatar" style="background:rgba(251,191,36,.2);color:var(--amber)">RI</div>
+            <div><div class="member-name">Riley</div><div class="member-role">Child · 14 · Limited</div></div>
+          </div>
+          <div class="member-status" style="margin-bottom:10px"><div class="status-dot" style="background:var(--amber)"></div>Away · school</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:var(--mono)">RILEY CAN SEE</div>
+          <div class="share-tags">
+            <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-calendar"></i>Calendar</div>
+            <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-checks"></i>Chores</div>
+            <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-building-bank"></i>Finance</div>
+            <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-briefcase"></i>Work</div>
+            <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-salad"></i>Meals</div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:10px">Click tags to toggle sharing permissions</div>
+        </div>
+
+        <!-- Sam -->
+        <div class="family-member-card">
+          <div class="member-header">
+            <div class="member-avatar" style="background:rgba(251,113,133,.2);color:var(--rose)">SA</div>
+            <div><div class="member-name">Sam</div><div class="member-role">Child · 9 · Restricted</div></div>
+          </div>
+          <div class="member-status" style="margin-bottom:10px"><div class="status-dot" style="background:var(--text3)"></div>Offline</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:var(--mono)">SAM CAN SEE</div>
+          <div class="share-tags">
+            <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-checks"></i>Chores</div>
+            <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-salad"></i>Meals</div>
+            <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-calendar"></i>Calendar</div>
+            <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-building-bank"></i>Finance</div>
+            <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-briefcase"></i>Work</div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:10px">Click tags to toggle sharing permissions</div>
+        </div>
+      </div>
+
+      <div class="divider"><div class="div-line"></div><div class="div-label">PERMISSION DETAILS — RILEY</div><div class="div-line"></div></div>
+      <div class="card">
+        <div class="permission-row"><div><div class="perm-label">View family calendar</div><div class="perm-sub">See events added by parents</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="permission-row"><div><div class="perm-label">Add own events</div><div class="perm-sub">Riley can add events to shared calendar</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="permission-row"><div><div class="perm-label">View chores list</div><div class="perm-sub">See assigned chores and mark done</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="permission-row"><div><div class="perm-label">View bank balances</div><div class="perm-sub">See checking / savings amounts</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="permission-row"><div><div class="perm-label">View investment accounts</div><div class="perm-sub">See stocks & bonds</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="permission-row"><div><div class="perm-label">Message all family members</div><div class="perm-sub">Send messages to any member</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="permission-row"><div><div class="perm-label">View work schedule</div><div class="perm-sub">See parent work hours</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+        <div class="permission-row"><div><div class="perm-label">Post to shared board</div><div class="perm-sub">Pin notes and items for family</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MESSAGES ── -->
+  <div class="section" id="sec-messages">
+    <div class="page-header">
+      <div><div class="page-title">Messages</div><div class="page-sub">Private family messaging</div></div>
+    </div>
+    <div class="page-content">
+      <div class="chat-layout">
+        <div class="chat-sidebar">
+          <div class="chat-thread active" onclick="switchThread(this,'Jordan','Family · All members')">
+            <div class="thread-inner">
+              <div style="display:flex;justify-content:space-between"><div class="thread-name">Family</div><div class="thread-time">2m</div></div>
+              <div class="thread-preview">Jordan: Picked up groceries!</div>
+            </div>
+          </div>
+          <div class="chat-thread" onclick="switchThread(this,'Jordan','Parent chat')">
+            <div class="thread-inner">
+              <div style="display:flex;justify-content:space-between"><div class="thread-name">Jordan</div><div class="thread-time">1h</div></div>
+              <div class="thread-preview">Can you pick up Sam today?</div>
+            </div>
+          </div>
+          <div class="chat-thread" onclick="switchThread(this,'Riley','You & Riley')">
+            <div class="thread-inner">
+              <div style="display:flex;justify-content:space-between"><div class="thread-name">Riley</div><div class="thread-time">3h</div></div>
+              <div class="thread-preview">Ok I'll do dishes after school</div>
+            </div>
+          </div>
+          <div class="chat-thread" onclick="switchThread(this,'Sam','You & Sam')">
+            <div class="thread-inner">
+              <div style="display:flex;justify-content:space-between"><div class="thread-name">Sam</div><div class="thread-time">9h</div></div>
+              <div class="thread-preview">Can we have pizza Friday?</div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-main">
+          <div class="chat-header">
+            <div class="avatar" style="width:30px;height:30px;font-size:11px;background:rgba(52,211,153,.2);color:var(--teal)">FA</div>
+            <div><div style="font-size:13px;font-weight:500;color:var(--text)" id="chat-thread-name">Family</div><div style="font-size:11px;color:var(--text3)" id="chat-thread-sub">Family · All members</div></div>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg"><div class="msg-avatar" style="background:rgba(45,212,191,.2);color:var(--teal)">JO</div><div><div class="msg-bubble">Hey everyone, I picked up the groceries on the way home!</div><div class="msg-time">2:14 PM</div></div></div>
+            <div class="msg mine"><div class="msg-avatar" style="background:rgba(108,99,255,.25);color:var(--purple)">AJ</div><div><div class="msg-bubble">Perfect! Can you grab almond butter too?</div><div class="msg-time">2:15 PM</div></div></div>
+            <div class="msg"><div class="msg-avatar" style="background:rgba(251,191,36,.2);color:var(--amber)">RI</div><div><div class="msg-bubble">I finished my homework. What chores do I have today?</div><div class="msg-time">3:02 PM</div></div></div>
+            <div class="msg mine"><div class="msg-avatar" style="background:rgba(108,99,255,.25);color:var(--purple)">AJ</div><div><div class="msg-bubble">Check the chores list in the app! Dishes tonight.</div><div class="msg-time">3:05 PM</div></div></div>
+            <div class="msg"><div class="msg-avatar" style="background:rgba(251,113,133,.2);color:var(--rose)">SA</div><div><div class="msg-bubble">Can we have pizza on Friday? Please?? 🍕</div><div class="msg-time">4:30 PM</div></div></div>
+          </div>
+          <div class="chat-input-wrap">
+            <input class="chat-input" id="msg-input" type="text" placeholder="Message family..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <button class="send-btn" onclick="sendMsg()"><i class="ti ti-send"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SHARED BOARD ── -->
+  <div class="section" id="sec-board">
+    <div class="page-header">
+      <div><div class="page-title">Shared Board</div><div class="page-sub">Notes, lists & updates for the family</div></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="openModal('pin-modal')"><i class="ti ti-plus"></i> Post to board</button></div>
+    </div>
+    <div class="page-content">
+      <div class="pin-grid" id="pin-grid">
+        <div class="pin-card">
+          <div class="pin-type"><i class="ti ti-alert-circle"></i>REMINDER</div>
+          <div class="pin-title">Dentist Wed 10:30 AM</div>
+          <div class="pin-body">Alex has dentist appointment. Need someone to cover school pickup!</div>
+          <div class="pin-footer"><div class="pin-from">Alex · 2h ago</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div>
+        </div>
+        <div class="pin-card">
+          <div class="pin-type"><i class="ti ti-list"></i>GROCERY</div>
+          <div class="pin-title">Add to grocery list</div>
+          <div class="pin-body">Running low on: oat milk, cereal, apples, peanut butter</div>
+          <div class="pin-footer"><div class="pin-from">Jordan · 5h ago</div><div class="pin-vis"><i class="ti ti-users"></i> Parents only</div></div>
+        </div>
+        <div class="pin-card">
+          <div class="pin-type"><i class="ti ti-star"></i>ACHIEVEMENT</div>
+          <div class="pin-title">Riley got an A!</div>
+          <div class="pin-body">Riley aced her history test. So proud!</div>
+          <div class="pin-footer"><div class="pin-from">Jordan · Yesterday</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div>
+        </div>
+        <div class="pin-card">
+          <div class="pin-type"><i class="ti ti-home"></i>HOUSE</div>
+          <div class="pin-title">Plumber coming Friday</div>
+          <div class="pin-body">Plumber arrives 10–12 AM Friday. Someone needs to be home.</div>
+          <div class="pin-footer"><div class="pin-from">Alex · Yesterday</div><div class="pin-vis"><i class="ti ti-lock"></i> Parents only</div></div>
+        </div>
+        <div class="pin-card">
+          <div class="pin-type"><i class="ti ti-heart"></i>NOTE</div>
+          <div class="pin-title">Family movie night!</div>
+          <div class="pin-body">Saturday 7 PM — vote for the movie by Friday!</div>
+          <div class="pin-footer"><div class="pin-from">Sam · 2d ago</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div>
+        </div>
+        <div class="pin-card">
+          <div class="pin-type"><i class="ti ti-calendar"></i>EVENT</div>
+          <div class="pin-title">Soccer game Sunday</div>
+          <div class="pin-body">Sam's soccer game · 9 AM at Westside Park. Bring snacks!</div>
+          <div class="pin-footer"><div class="pin-from">Jordan · 2d ago</div><div class="pin-vis"><i class="ti ti-users"></i> All family</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ══ MODALS ══ -->
+<div id="add-event-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('add-event-modal')">
+  <div class="modal">
+    <div class="modal-title">Add event or reminder</div>
+    <div class="form-group"><label class="form-label">TITLE</label><input type="text" placeholder="e.g. Dentist appointment"></div>
+    <div class="form-group"><label class="form-label">DATE & TIME</label><input type="datetime-local"></div>
+    <div class="form-group"><label class="form-label">TYPE</label><select><option>Appointment</option><option>Payment</option><option>Work</option><option>Personal</option><option>Chore</option></select></div>
+    <div class="form-group"><label class="form-label">VISIBLE TO</label><select><option>All family</option><option>Parents only</option><option>Just me</option></select></div>
+    <div class="form-group"><label class="form-label">NOTES</label><textarea rows="2" placeholder="Optional details..."></textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-event-modal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('add-event-modal')">Save</button></div>
+  </div>
+</div>
+
+<div id="add-task-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('add-task-modal')">
+  <div class="modal">
+    <div class="modal-title">Add task or chore</div>
+    <div class="form-group"><label class="form-label">TASK NAME</label><input type="text" placeholder="e.g. Take out trash"></div>
+    <div class="form-group"><label class="form-label">TYPE</label><select><option>Daily task</option><option>Chore</option></select></div>
+    <div class="form-group"><label class="form-label">ASSIGN TO</label><select><option>Alex</option><option>Jordan</option><option>Riley</option><option>Sam</option><option>All</option></select></div>
+    <div class="form-group"><label class="form-label">DUE</label><select><option>Today</option><option>Tomorrow</option><option>This week</option><option>Weekly recurring</option></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-task-modal')">Cancel</button><button class="btn btn-primary" onclick="addTaskFromModal()">Add task</button></div>
+  </div>
+</div>
+
+<div id="add-reminder-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('add-reminder-modal')">
+  <div class="modal">
+    <div class="modal-title">Add reminder</div>
+    <div class="form-group"><label class="form-label">TITLE</label><input type="text" placeholder="e.g. Car insurance renewal"></div>
+    <div class="form-group"><label class="form-label">DATE</label><input type="date"></div>
+    <div class="form-group"><label class="form-label">CATEGORY</label><select><option>Health</option><option>Insurance</option><option>Car</option><option>Home</option><option>Childcare</option><option>Appointment</option><option>Other</option></select></div>
+    <div class="form-group"><label class="form-label">AMOUNT (optional)</label><input type="text" placeholder="$0.00"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-reminder-modal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('add-reminder-modal')">Save</button></div>
+  </div>
+</div>
+
+<div id="add-grocery-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('add-grocery-modal')">
+  <div class="modal">
+    <div class="modal-title">Add grocery item</div>
+    <div class="form-group"><label class="form-label">ITEM</label><input type="text" id="grocery-item-input" placeholder="e.g. Oat milk"></div>
+    <div class="form-group"><label class="form-label">QUANTITY</label><input type="text" id="grocery-qty-input" placeholder="x1"></div>
+    <div class="form-group"><label class="form-label">CATEGORY</label><select><option>Produce</option><option>Protein</option><option>Dairy</option><option>Pantry</option><option>Snacks</option></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('add-grocery-modal')">Cancel</button><button class="btn btn-primary" onclick="addGroceryItem()">Add item</button></div>
+  </div>
+</div>
+
+<div id="invite-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('invite-modal')">
+  <div class="modal">
+    <div class="modal-title">Invite family member</div>
+    <div class="form-group"><label class="form-label">NAME</label><input type="text" placeholder="Full name"></div>
+    <div class="form-group"><label class="form-label">EMAIL</label><input type="email" placeholder="email@example.com"></div>
+    <div class="form-group"><label class="form-label">ROLE</label><select><option>Parent (full access)</option><option>Teen (limited)</option><option>Child (restricted)</option><option>Guest</option></select></div>
+    <div class="form-group"><label class="form-label">DEFAULT PERMISSIONS</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-calendar"></i>Calendar</div>
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-checks"></i>Tasks</div>
+        <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-building-bank"></i>Finance</div>
+        <div class="share-tag" onclick="this.classList.toggle('on')"><i class="ti ti-briefcase"></i>Work</div>
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-salad"></i>Meals</div>
+        <div class="share-tag on" onclick="this.classList.toggle('on')"><i class="ti ti-message-circle"></i>Messages</div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('invite-modal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('invite-modal')">Send invite</button></div>
+  </div>
+</div>
+
+<div id="pin-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('pin-modal')">
+  <div class="modal">
+    <div class="modal-title">Post to shared board</div>
+    <div class="form-group"><label class="form-label">TYPE</label><select id="pin-type-sel"><option>NOTE</option><option>REMINDER</option><option>GROCERY</option><option>ACHIEVEMENT</option><option>EVENT</option><option>HOUSE</option></select></div>
+    <div class="form-group"><label class="form-label">TITLE</label><input type="text" id="pin-title-input" placeholder="Short title..."></div>
+    <div class="form-group"><label class="form-label">BODY</label><textarea rows="3" id="pin-body-input" placeholder="Details..."></textarea></div>
+    <div class="form-group"><label class="form-label">VISIBLE TO</label><select id="pin-vis-sel"><option>All family</option><option>Parents only</option><option>Just me</option></select></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('pin-modal')">Cancel</button><button class="btn btn-primary" onclick="addPin()">Post</button></div>
+  </div>
+</div>
+
+<script>
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const NOW = new Date(2026,4,18);
+let calY=2026,calM=4;
+
+document.getElementById('overview-date').textContent = days[NOW.getDay()]+', '+months[NOW.getMonth()]+' '+NOW.getDate()+', 2026';
+
+const calEvents = {
+  '2026-5-18':[{l:'Meal prep + morning shift',c:'#fbbf24'},{l:'Work 8–4 PM',c:'#34d399'}],
+  '2026-5-19':[{l:'Grocery run',c:'#fbbf24'}],
+  '2026-5-20':[{l:'Health insurance $320',c:'#fb7185'}],
+  '2026-5-21':[{l:'Dentist 10:30 AM',c:'#60a5fa'},{l:'Work 8–4 PM',c:'#34d399'}],
+  '2026-5-22':[{l:'Car insurance $187',c:'#fb7185'},{l:'Work 11–7 PM',c:'#34d399'}],
+  '2026-5-23':[{l:'Childcare $650',c:'#fb7185'},{l:'Soccer practice 4 PM',c:'#a78bfa'}],
+  '2026-5-24':[{l:'Laundry & vacuum',c:'#fbbf24'},{l:'Late shift 12–8 PM',c:'#34d399'}],
+  '2026-5-26':[{l:'Family movie night',c:'#a78bfa'}],
+  '2026-5-29':[{l:'Soccer game 9 AM',c:'#a78bfa'}],
+  '2026-5-30':[{l:'Paycheck day',c:'#34d399'}],
+  '2026-6-1':[{l:'Home insurance $100',c:'#fb7185'}],
+  '2026-6-10':[{l:'Annual physical 9 AM',c:'#60a5fa'}],
+};
+
+function buildCal(){
+  const grid=document.getElementById('cal-grid');
+  const hdrs=Array.from(grid.querySelectorAll('.cal-hdr'));
+  grid.innerHTML='';
+  hdrs.forEach(h=>grid.appendChild(h));
+  const first=new Date(calY,calM,1).getDay();
+  const dim=new Date(calY,calM+1,0).getDate();
+  const prev=new Date(calY,calM,0).getDate();
+  document.getElementById('cal-label').textContent=months[calM]+' '+calY;
+  for(let i=0;i<first;i++){const d=document.createElement('div');d.className='cal-day other';d.textContent=prev-first+1+i;grid.appendChild(d);}
+  for(let d=1;d<=dim;d++){
+    const key=`${calY}-${calM+1}-${d}`;
+    const evts=calEvents[key]||[];
+    const isT=calY===2026&&calM===4&&d===18;
+    const el=document.createElement('div');
+    el.className='cal-day'+(isT?' today':'')+(evts.length?' has-ev':'');
+    el.innerHTML=`<span>${d}</span>`;
+    if(evts.length){const dd=document.createElement('div');dd.className='cal-dots';evts.slice(0,3).forEach(e=>{const dot=document.createElement('div');dot.className='cal-dot';dot.style.background=e.c;dd.appendChild(dot);});el.appendChild(dd);}
+    el.onclick=()=>showCalDay(d,key,evts);
+    grid.appendChild(el);
+  }
+  const total=first+dim;const rem=(7-total%7)%7;
+  for(let i=1;i<=rem;i++){const d=document.createElement('div');d.className='cal-day other';d.textContent=i;grid.appendChild(d);}
+}
+function changeMonth(dir){calM+=dir;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}buildCal();}
+function showCalDay(d,key,evts){
+  const det=document.getElementById('cal-detail');
+  const lbl=new Date(calY,calM,d).toLocaleDateString('default',{weekday:'long',month:'long',day:'numeric'});
+  if(!evts.length){det.innerHTML=`<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">${lbl}</div><div style="font-size:12px;color:var(--text3)">No events scheduled</div>`;return;}
+  det.innerHTML=`<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px">${lbl}</div>`+evts.map(e=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)"><div style="width:7px;height:7px;border-radius:50%;background:${e.c};flex-shrink:0"></div><span style="font-size:13px;color:var(--text)">${e.l}</span></div>`).join('');
+}
+
+function showSection(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='calendar')buildCal();
+  if(id==='finance')buildSpendChart();
+}
+
+let chartBuilt=false;
+function buildSpendChart(){
+  if(chartBuilt)return;chartBuilt=true;
+  new Chart(document.getElementById('spendChart'),{
+    type:'bar',
+    data:{labels:['Housing','Food','Transport','Health','Childcare','Savings'],datasets:[{label:'Monthly ($)',data:[1800,500,320,320,650,800],backgroundColor:['#60a5fa','#34d399','#fbbf24','#fb7185','#a78bfa','#2dd4bf'],borderWidth:0,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false,color:'rgba(255,255,255,0.05)'},ticks:{color:'#9090a8',font:{size:11,family:'DM Mono'}}},y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#9090a8',font:{size:11,family:'DM Mono'},callback:v=>'$'+v.toLocaleString()}}}}
+  });
+}
+
+function toggleTaskItem(chk,id){
+  const row=document.getElementById(id);
+  const badge=row.querySelector('.badge');
+  if(row.classList.contains('strikethrough')){
+    row.classList.remove('strikethrough');chk.classList.remove('done');chk.innerHTML='';
+    if(badge){badge.className='badge b-amber';badge.textContent='Pending';}
+  } else {
+    row.classList.add('strikethrough');chk.classList.add('done');chk.innerHTML='<i class="ti ti-check"></i>';
+    if(badge){badge.className='badge b-green';badge.textContent='Done';}
+  }
+}
+function ovCheck(chk,id){
+  const row=document.getElementById(id);
+  if(row.classList.contains('strikethrough')){row.classList.remove('strikethrough');chk.classList.remove('done');chk.innerHTML='';}
+  else{row.classList.add('strikethrough');chk.classList.add('done');chk.innerHTML='<i class="ti ti-check"></i>';}
+}
+
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+
+function addTaskFromModal(){
+  const list=document.getElementById('task-list');
+  const title=list.closest('.page-content')? 'New task' : 'New task';
+  closeModal('add-task-modal');
+}
+
+function addGroceryItem(){
+  const name=document.getElementById('grocery-item-input').value.trim()||'Item';
+  const qty=document.getElementById('grocery-qty-input').value.trim()||'x1';
+  const list=document.getElementById('grocery-list');
+  const el=document.createElement('div');el.className='grocery-item';
+  el.innerHTML=`<div class="check"></div><div class="qty">${qty}</div><div class="row-body"><div class="row-title">${name}</div></div>`;
+  list.appendChild(el);closeModal('add-grocery-modal');
+  document.getElementById('grocery-item-input').value='';document.getElementById('grocery-qty-input').value='';
+}
+
+function addPin(){
+  const type=document.getElementById('pin-type-sel').value;
+  const title=document.getElementById('pin-title-input').value.trim()||'New post';
+  const body=document.getElementById('pin-body-input').value.trim()||'';
+  const vis=document.getElementById('pin-vis-sel').value;
+  const iconMap={NOTE:'ti-heart',REMINDER:'ti-alert-circle',GROCERY:'ti-list',ACHIEVEMENT:'ti-star',EVENT:'ti-calendar',HOUSE:'ti-home'};
+  const grid=document.getElementById('pin-grid');
+  const el=document.createElement('div');el.className='pin-card';
+  el.innerHTML=`<div class="pin-type"><i class="ti ${iconMap[type]||'ti-note'}"></i>${type}</div><div class="pin-title">${title}</div><div class="pin-body">${body}</div><div class="pin-footer"><div class="pin-from">Alex · just now</div><div class="pin-vis"><i class="ti ti-users"></i>${vis}</div></div>`;
+  grid.prepend(el);closeModal('pin-modal');
+  document.getElementById('pin-title-input').value='';document.getElementById('pin-body-input').value='';
+}
+
+let activeMember='Alex (You)';
+function switchMember(el,name,role){
+  document.querySelectorAll('.member-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activeMember=name;
+  document.querySelector('.page-title') && null;
+}
+
+const threadData={
+  'Family':[
+    {from:'JO',bg:'rgba(45,212,191,.2)',c:'var(--teal)',text:'Hey everyone, I picked up the groceries on the way home!',time:'2:14 PM',mine:false},
+    {from:'AJ',bg:'rgba(108,99,255,.25)',c:'var(--purple)',text:'Perfect! Can you grab almond butter too?',time:'2:15 PM',mine:true},
+    {from:'RI',bg:'rgba(251,191,36,.2)',c:'var(--amber)',text:'I finished my homework. What chores do I have today?',time:'3:02 PM',mine:false},
+    {from:'AJ',bg:'rgba(108,99,255,.25)',c:'var(--purple)',text:'Check the chores list in the app! Dishes tonight.',time:'3:05 PM',mine:true},
+    {from:'SA',bg:'rgba(251,113,133,.2)',c:'var(--rose)',text:'Can we have pizza on Friday? Please?? 🍕',time:'4:30 PM',mine:false},
+  ],
+  'Jordan':[
+    {from:'JO',bg:'rgba(45,212,191,.2)',c:'var(--teal)',text:'Can you pick up Sam today?',time:'1:00 PM',mine:false},
+    {from:'AJ',bg:'rgba(108,99,255,.25)',c:'var(--purple)',text:'Yes I got it!',time:'1:02 PM',mine:true},
+  ],
+  'Riley':[
+    {from:'AJ',bg:'rgba(108,99,255,.25)',c:'var(--purple)',text:'Riley, remember dishes tonight!',time:'3:00 PM',mine:true},
+    {from:'RI',bg:'rgba(251,191,36,.2)',c:'var(--amber)',text:'Ok I\'ll do dishes after school',time:'3:08 PM',mine:false},
+  ],
+  'Sam':[
+    {from:'SA',bg:'rgba(251,113,133,.2)',c:'var(--rose)',text:'Can we have pizza Friday?',time:'9:00 AM',mine:false},
+    {from:'AJ',bg:'rgba(108,99,255,.25)',c:'var(--purple)',text:'Maybe! We\'ll see how the week goes 😄',time:'9:05 AM',mine:true},
+  ]
+};
+let activeThread='Family';
+function switchThread(el,name,sub){
+  document.querySelectorAll('.chat-thread').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeThread=name;
+  document.getElementById('chat-thread-name').textContent=name;
+  document.getElementById('chat-thread-sub').textContent=sub;
+  const msgs=document.getElementById('chat-messages');
+  const data=threadData[name]||[];
+  msgs.innerHTML=data.map(m=>`<div class="msg${m.mine?' mine':''}"><div class="msg-avatar" style="width:28px;height:28px;font-size:10px;font-weight:600;background:${m.bg};color:${m.c}">${m.from}</div><div><div class="msg-bubble">${m.text}</div><div class="msg-time">${m.time}</div></div></div>`).join('');
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function sendMsg(){
+  const inp=document.getElementById('msg-input');
+  const txt=inp.value.trim();if(!txt)return;
+  const msgs=document.getElementById('chat-messages');
+  const el=document.createElement('div');el.className='msg mine';
+  const now=new Date();const time=now.toLocaleTimeString('default',{hour:'numeric',minute:'2-digit'});
+  el.innerHTML=`<div class="msg-avatar" style="width:28px;height:28px;font-size:10px;font-weight:600;background:rgba(108,99,255,.25);color:var(--purple)">AJ</div><div><div class="msg-bubble">${txt}</div><div class="msg-time">${time}</div></div>`;
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;inp.value='';
+}
+
+buildCal();
+</script>
+</body>
+</html>
